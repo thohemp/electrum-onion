@@ -268,8 +268,8 @@ class InstallWizard(QDialog):
         b3.setText(_("Multisig wallet (paired manually)"))
 
         grid.addWidget(b1,1,0)
-        grid.addWidget(b2,2,0)
-        grid.addWidget(b3,3,0)
+        #grid.addWidget(b2,2,0)
+        #grid.addWidget(b3,3,0)
 
         vbox = QVBoxLayout()
 
