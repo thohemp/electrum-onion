@@ -42,7 +42,7 @@ from typing import TYPE_CHECKING, Optional
 
 script_dir = os.path.dirname(os.path.realpath(__file__))
 is_bundle = getattr(sys, 'frozen', False)
-is_local = not is_bundle and os.path.exists(os.path.join(script_dir, "electrum-ltc.desktop"))
+is_local = not is_bundle and os.path.exists(os.path.join(script_dir, "electrum-onionon.desktop"))
 is_android = 'ANDROID_DATA' in os.environ
 
 if is_local:  # running from source
@@ -50,7 +50,7 @@ if is_local:  # running from source
     warnings.simplefilter('default', DeprecationWarning)
 
 # move this back to gui/kivy/__init.py once plugins are moved
-os.environ['KIVY_DATA_DIR'] = os.path.abspath(os.path.dirname(__file__)) + '/electrum_ltc/gui/kivy/data/'
+os.environ['KIVY_DATA_DIR'] = os.path.abspath(os.path.dirname(__file__)) + '/electrum_onion/gui/kivy/data/'
 
 if is_local or is_android:
     sys.path.insert(0, os.path.join(script_dir, 'packages'))
@@ -80,24 +80,24 @@ if not is_android:
     check_imports()
 
 
-from electrum_ltc.logging import get_logger, configure_logging
-from electrum_ltc import util
-from electrum_ltc import constants
-from electrum_ltc import SimpleConfig
-from electrum_ltc.wallet_db import WalletDB
-from electrum_ltc.wallet import Wallet
-from electrum_ltc.storage import WalletStorage
-from electrum_ltc.util import print_msg, print_stderr, json_encode, json_decode, UserCancelled
-from electrum_ltc.util import InvalidPassword
-from electrum_ltc.commands import get_parser, known_commands, Commands, config_variables
-from electrum_ltc import daemon
-from electrum_ltc import keystore
-from electrum_ltc.util import create_and_start_event_loop
+from electrum_onion.logging import get_logger, configure_logging
+from electrum_onion import util
+from electrum_onion import constants
+from electrum_onion import SimpleConfig
+from electrum_onion.wallet_db import WalletDB
+from electrum_onion.wallet import Wallet
+from electrum_onion.storage import WalletStorage
+from electrum_onion.util import print_msg, print_stderr, json_encode, json_decode, UserCancelled
+from electrum_onion.util import InvalidPassword
+from electrum_onion.commands import get_parser, known_commands, Commands, config_variables
+from electrum_onion import daemon
+from electrum_onion import keystore
+from electrum_onion.util import create_and_start_event_loop
 
 if TYPE_CHECKING:
     import threading
 
-    from electrum_ltc.plugin import Plugins
+    from electrum_onion.plugin import Plugins
 
 _logger = get_logger(__name__)
 
@@ -134,7 +134,7 @@ def init_cmdline(config_options, wallet_path, server, *, config: 'SimpleConfig')
 
     if cmd.requires_wallet and not storage.file_exists():
         print_msg("Error: Wallet file not found.")
-        print_msg("Type 'electrum-ltc create' to create a new wallet, or provide a path to a wallet with the -w option")
+        print_msg("Type 'electrum-onionon create' to create a new wallet, or provide a path to a wallet with the -w option")
         sys_exit(1)
 
     # important warning
@@ -258,7 +258,7 @@ async def run_offline_command(config, config_options, plugins: 'Plugins'):
 
 
 def init_plugins(config, gui_name):
-    from electrum_ltc.plugin import Plugins
+    from electrum_onion.plugin import Plugins
     return Plugins(config, gui_name)
 
 
@@ -316,7 +316,7 @@ def main():
     # config is an object passed to the various constructors (wallet, interface, gui)
     if is_android:
         from jnius import autoclass
-        build_config = autoclass("org.electrum_ltc.electrum_ltc.BuildConfig")
+        build_config = autoclass("org.electrum_onion.electrum_onion.BuildConfig")
         config_options = {
             'verbosity': '*' if build_config.DEBUG else '',
             'cmd': 'gui',
@@ -336,7 +336,7 @@ def main():
         config_options['portable'] = True
 
     if config_options.get('portable'):
-        config_options['electrum_path'] = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'electrum-ltc_data')
+        config_options['electrum_path'] = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'electrum-onionon_data')
 
     if not config_options.get('verbosity'):
         warnings.simplefilter('ignore', DeprecationWarning)
@@ -344,7 +344,7 @@ def main():
     # check uri
     uri = config_options.get('url')
     if uri:
-        if not uri.startswith('litecoin:'):
+        if not uri.startswith('deeponionn:'):
             print_stderr('unknown command:', uri)
             sys.exit(1)
 
@@ -432,7 +432,7 @@ def handle_cmd(*, cmdname: str, config: 'SimpleConfig', config_options: dict):
             try:
                 result = daemon.request(config, 'run_cmdline', (config_options,), timeout)
             except daemon.DaemonNotRunning:
-                print_msg("Daemon not running; try 'electrum-ltc daemon -d'")
+                print_msg("Daemon not running; try 'electrum-onionon daemon -d'")
                 if not cmd.requires_network:
                     print_msg("To run this command without a daemon, use --offline")
                 sys_exit(1)

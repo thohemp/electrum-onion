@@ -1,6 +1,6 @@
 include LICENCE RELEASE-NOTES AUTHORS
 include README.rst
-include electrum-ltc.desktop
+include electrum-onion.desktop
 include *.py
 include run_electrum
 recursive-include packages *.py
@@ -11,12 +11,12 @@ include contrib/deterministic-build/requirements*.txt
 include contrib/make_libsecp256k1.sh
 include contrib/build_tools_util.sh
 
-graft electrum_ltc
-prune electrum_ltc/tests
+graft electrum_onion
+prune electrum_onion/tests
 graft contrib/udev
 
-exclude electrum_ltc/*.so
-exclude electrum_ltc/*.so.0
+exclude electrum_onion/*.so
+exclude electrum_onion/*.so.0
 
 global-exclude __pycache__
 global-exclude *.py[co~]

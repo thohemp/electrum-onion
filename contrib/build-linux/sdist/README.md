@@ -34,8 +34,8 @@ folder.
         umask 0022 && \
         mkdir -p $FRESH_CLONE && \
         cd $FRESH_CLONE  && \
-        git clone https://github.com/pooler/electrum-ltc.git && \
-        cd electrum-ltc
+        git clone https://github.com/pooler/electrum-onion.git && \
+        cd electrum-onion
     ```
 
     And then build from this directory:
@@ -43,9 +43,9 @@ folder.
     $ git checkout $REV
     $ sudo docker run -it \
         --name electrum-sdist-builder-cont \
-        -v $PWD:/opt/electrum-ltc \
+        -v $PWD:/opt/electrum-onion \
         --rm \
-        --workdir /opt/electrum-ltc/contrib/build-linux/sdist \
+        --workdir /opt/electrum-onion/contrib/build-linux/sdist \
         electrum-sdist-builder-img \
         ./build.sh
     ```

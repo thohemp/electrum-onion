@@ -23,13 +23,13 @@ rm "$here"/dist/* -rf
 
 mkdir -p "$CACHEDIR" "$PIP_CACHE_DIR"
 
-if [ -f "$PROJECT_ROOT/electrum_ltc/libsecp256k1-0.dll" ]; then
+if [ -f "$PROJECT_ROOT/electrum_onion/libsecp256k1-0.dll" ]; then
     info "libsecp256k1 already built, skipping"
 else
     "$CONTRIB"/make_libsecp256k1.sh || fail "Could not build libsecp"
 fi
 
-if [ -f "$PROJECT_ROOT/electrum_ltc/libzbar-0.dll" ]; then
+if [ -f "$PROJECT_ROOT/electrum_onion/libzbar-0.dll" ]; then
     info "libzbar already built, skipping"
 else
     "$CONTRIB"/make_zbar.sh || fail "Could not build zbar"

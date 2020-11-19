@@ -4,7 +4,7 @@ Building macOS binaries
 ✗ _This script does not produce reproducible output (yet!).
    Please help us remedy this._
 
-This guide explains how to build Electrum-LTC binaries for macOS systems.
+This guide explains how to build electrum-onion binaries for macOS systems.
 
 
 ## Building the binary
@@ -57,12 +57,12 @@ On newer Mac, run:
 Move `prebuilt_qr` to El Capitan: `contrib/osx/CalinsQRReader/prebuilt_qr`.
 
 
-#### 2. Build Electrum-LTC
+#### 2. Build electrum-onion
 
-    cd electrum-ltc
+    cd electrum-onion
     ./contrib/osx/make_osx
 
-This creates both a folder named Electrum-LTC.app and the .dmg file.
+This creates both a folder named electrum-onion.app and the .dmg file.
 
 If you want the binaries codesigned for MacOS and notarised by Apple's central server,
 provide these env vars to the `make_osx` script:

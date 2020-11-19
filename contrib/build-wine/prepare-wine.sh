@@ -100,15 +100,15 @@ cp "$CACHEDIR/libusb/libusb/.libs/libusb-1.0.dll" $WINEPREFIX/drive_c/tmp/  || f
 
 
 # copy already built DLLs
-cp "$PROJECT_ROOT/electrum_ltc/libsecp256k1-0.dll" $WINEPREFIX/drive_c/tmp/ || fail "Could not copy libsecp to its destination"
-cp "$PROJECT_ROOT/electrum_ltc/libzbar-0.dll" $WINEPREFIX/drive_c/tmp/ || fail "Could not copy libzbar to its destination"
+cp "$PROJECT_ROOT/electrum_onion/libsecp256k1-0.dll" $WINEPREFIX/drive_c/tmp/ || fail "Could not copy libsecp to its destination"
+cp "$PROJECT_ROOT/electrum_onion/libzbar-0.dll" $WINEPREFIX/drive_c/tmp/ || fail "Could not copy libzbar to its destination"
 
 
 info "Building PyInstaller."
 # we build our own PyInstaller boot loader as the default one has high
 # anti-virus false positives
 (
-    cd "$WINEPREFIX/drive_c/electrum-ltc"
+    cd "$WINEPREFIX/drive_c/electrum-onion"
     ELECTRUM_COMMIT_HASH=$(git rev-parse HEAD)
     cd "$CACHEDIR"
     rm -rf pyinstaller

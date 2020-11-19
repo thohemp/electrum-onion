@@ -4,8 +4,8 @@
 build/
 dist/
 *.egg/
-Electrum_LTC.egg-info/
-electrum_ltc/locale/
+electrum_onion.egg-info/
+electrum_onion/locale/
 .devlocaltmp/
 *_trial_temp
 packages
@@ -16,12 +16,12 @@ bin/
 .idea
 .mypy_cache
 .vscode
-electrum-ltc_data
+electrum-onion_data
 
 # icons
-electrum_ltc/gui/kivy/theming/light-0.png
-electrum_ltc/gui/kivy/theming/light-1.png
-electrum_ltc/gui/kivy/theming/light.atlas
+electrum_onion/gui/kivy/theming/light-0.png
+electrum_onion/gui/kivy/theming/light-1.png
+electrum_onion/gui/kivy/theming/light.atlas
 
 # tests/tox
 .tox/
@@ -37,7 +37,7 @@ contrib/build-linux/appimage/.cache/
 contrib/android_debug.keystore
 
 # shared objects
-electrum_ltc/*.so
-electrum_ltc/*.so.0
-electrum_ltc/*.dll
-electrum_ltc/*.dylib
+electrum_onion/*.so
+electrum_onion/*.so.0
+electrum_onion/*.dll
+electrum_onion/*.dylib

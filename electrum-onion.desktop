@@ -1,0 +1,22 @@
+# If you want Electrum to appear in a Linux app launcher ("start menu"), install this by doing:
+# sudo desktop-file-install electrum-onion.desktop
+
+[Desktop Entry]
+Comment=Lightweight DeepOnion Client
+Exec=sh -c "PATH=\"\\$HOME/.local/bin:\\$PATH\"; electrum-onion %u"
+GenericName[en_US]=DeepOnion Wallet
+GenericName=DeepOnion Wallet
+Icon=electrum-onion
+Name[en_US]=Electrum DeepOnion Wallet
+Name=Electrum DeepOnionn Wallet
+Categories=Finance;Network;
+StartupNotify=true
+StartupWMClass=electrum-onion
+Terminal=false
+Type=Application
+MimeType=x-scheme-handler/deeponion;
+Actions=Testnet;
+
+[Desktop Action Testnet]
+Exec=sh -c "PATH=\"\\$HOME/.local/bin:\\$PATH\"; electrum-onion --testnet %u"
+Name=Testnet mode
