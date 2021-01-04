@@ -1,14 +1,9 @@
 {
-    "2y27fkedpau73lbw.onion": {
-        "pruning": "-",
-        "s": "50004",
-        "t": "50003",
-        "version": "1.2"
-    },
-    "agapc7dhcqfjqpjb.onion": {
+    "localhost": {
         "pruning": "-",
         "s": "50004",
         "t": "50003",
         "version": "1.2"
     }
+    
 }
