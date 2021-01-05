@@ -583,8 +583,10 @@ class Transaction:
         vds = BCDataStream()
         vds.write(raw_bytes)
         self._version = vds.read_int32()
+        self.ntime = vds.read_uint32()
         n_vin = vds.read_compact_size()
         is_segwit = (n_vin == 0)
+        print("is segwit: {}".format(is_segwit))
         if is_segwit:
             marker = vds.read_bytes(1)
             if marker != b'\x01':
@@ -785,6 +787,7 @@ class Transaction:
         """
         self.deserialize()
         nVersion = int_to_hex(self.version, 4)
+        nTime = int_to_hex(self.ntime, 4)
         nLocktime = int_to_hex(self.locktime, 4)
         inputs = self.inputs()
         outputs = self.outputs()
@@ -804,9 +807,9 @@ class Transaction:
             marker = '00'
             flag = '01'
             witness = ''.join(self.serialize_witness(x, estimate_size=estimate_size) for x in inputs)
-            return nVersion + marker + flag + txins + txouts + witness + nLocktime
+            return nVersion + nTime + marker + flag + txins + txouts + witness + nLocktime
         else:
-            return nVersion + txins + txouts + nLocktime
+            return nVersion +  nTime + txins + txouts + nLocktime
 
     def to_qr_data(self) -> str:
         """Returns tx as data to be put into a QR code. No side-effects."""
