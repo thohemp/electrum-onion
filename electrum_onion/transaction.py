@@ -39,6 +39,7 @@ from enum import IntEnum
 import itertools
 import binascii
 import copy
+import time
 
 from . import ecc, bitcoin, constants, segwit_addr, bip32
 from .bip32 import BIP32Node
@@ -530,6 +531,7 @@ class Transaction:
         self._outputs = None  # type: List[TxOutput]
         self._locktime = 0
         self._version = 2
+        self.ntime = int(time.time())
 
         self._cached_txid = None  # type: Optional[str]
 
@@ -586,7 +588,6 @@ class Transaction:
         self.ntime = vds.read_uint32()
         n_vin = vds.read_compact_size()
         is_segwit = (n_vin == 0)
-        print("is segwit: {}".format(is_segwit))
         if is_segwit:
             marker = vds.read_bytes(1)
             if marker != b'\x01':
@@ -1564,6 +1565,7 @@ class PartialTransaction(Transaction):
         res._inputs = [PartialTxInput.from_txin(txin) for txin in tx.inputs()]
         res._outputs = [PartialTxOutput.from_txout(txout) for txout in tx.outputs()]
         res.version = tx.version
+        res.ntime = tx.ntime
         res.locktime = tx.locktime
         return res
 
@@ -1789,6 +1791,7 @@ class PartialTransaction(Transaction):
     def serialize_preimage(self, txin_index: int, *,
                            bip143_shared_txdigest_fields: BIP143SharedTxDigestFields = None) -> str:
         nVersion = int_to_hex(self.version, 4)
+        nTime = int_to_hex(self.ntime, 4)
         nLocktime = int_to_hex(self.locktime, 4)
         inputs = self.inputs()
         outputs = self.outputs()
@@ -1808,12 +1811,12 @@ class PartialTransaction(Transaction):
             scriptCode = var_int(len(preimage_script) // 2) + preimage_script
             amount = int_to_hex(txin.value_sats(), 8)
             nSequence = int_to_hex(txin.nsequence, 4)
-            preimage = nVersion + hashPrevouts + hashSequence + outpoint + scriptCode + amount + nSequence + hashOutputs + nLocktime + nHashType
+            preimage = nVersion + nTime + hashPrevouts + hashSequence + outpoint + scriptCode + amount + nSequence + hashOutputs + nLocktime + nHashType
         else:
             txins = var_int(len(inputs)) + ''.join(self.serialize_input(txin, preimage_script if txin_index==k else '')
                                                    for k, txin in enumerate(inputs))
             txouts = var_int(len(outputs)) + ''.join(o.serialize_to_network().hex() for o in outputs)
-            preimage = nVersion + txins + txouts + nLocktime + nHashType
+            preimage = nVersion + nTime + txins + txouts + nLocktime + nHashType
         return preimage
 
     def sign(self, keypairs) -> None:

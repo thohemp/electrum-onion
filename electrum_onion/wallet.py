@@ -1253,6 +1253,7 @@ class Abstract_Wallet(AddressSynchronizer, ABC):
             tx = PartialTransaction.from_io(list(coins), list(outputs))
 
         # Timelock tx to current height.
+        tx.ntime = int(time.time())
         tx.locktime = get_locktime_for_new_transaction(self.network)
 
         tx.add_info_from_wallet(self)

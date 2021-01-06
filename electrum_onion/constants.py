@@ -51,7 +51,7 @@ class AbstractNet:
 
     @classmethod
     def max_checkpoint(cls) -> int:
-        return max(0, len(cls.CHECKPOINTS) * 240 - 1)
+        return max(0, len(cls.CHECKPOINTS) * 2016- 1)
 
     @classmethod
     def rev_genesis_bytes(cls) -> bytes:
@@ -62,9 +62,9 @@ class BitcoinMainnet(AbstractNet):
 
     TESTNET = False
     WIF_PREFIX = 0x80
-    ADDRTYPE_P2PKH = 48
-    ADDRTYPE_P2SH = 50
-    SEGWIT_HRP = "dnp"
+    ADDRTYPE_P2PKH = 31
+    ADDRTYPE_P2SH = 78
+    SEGWIT_HRP = "dpn"
     GENESIS = "000004e29458ef4f2e0abab544737b07344e6ff13718f7c2d12926166db07b5e"
     DEFAULT_PORTS = {'t': '50001', 's': '50002'}
     DEFAULT_SERVERS = read_json('servers.json', {})
@@ -88,9 +88,6 @@ class BitcoinMainnet(AbstractNet):
     }
     XPUB_HEADERS_INV = inv_dict(XPUB_HEADERS)
     BIP44_COIN_TYPE = 2
-    LN_REALM_BYTE = 0
-    LN_DNS_SEEDS = [
-    ]
 
 
 class BitcoinTestnet(AbstractNet):

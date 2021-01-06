@@ -740,7 +740,6 @@ class Interface(Logger):
         assert 0 <= height <= self.tip, (height, self.tip)
         if header is None:
             header = await self.get_block_header(height, 'catchup')
-
         chain = blockchain.check_header(header) if 'mock' not in header else header['mock']['check'](header)
         if chain:
             self.blockchain = chain if isinstance(chain, Blockchain) else self.blockchain
@@ -749,7 +748,6 @@ class Interface(Logger):
             # not have the header itself. e.g. regtest chain with only genesis.
             # this situation resolves itself on the next block
             return 'catchup', height+1
-
         can_connect = blockchain.can_connect(header) if 'mock' not in header else header['mock']['connect'](height)
         if not can_connect:
             self.logger.info(f"can't connect {height}")

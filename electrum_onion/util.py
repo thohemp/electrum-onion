@@ -73,11 +73,11 @@ def inv_dict(d):
 ca_path = certifi.where()
 
 
-base_units = {'LTC':8, 'mLTC':5, 'uLTC':2, 'sat':0}
+base_units = {'ONION':8, 'mONION':5, 'uONION':2, 'sat':0}
 base_units_inverse = inv_dict(base_units)
-base_units_list = ['LTC', 'mLTC', 'uLTC', 'sat']  # list(dict) does not guarantee order
+base_units_list = ['ONION', 'mONION', 'uONION', 'sat']  # list(dict) does not guarantee order
 
-DECIMAL_POINT_DEFAULT = 8  # LTC
+DECIMAL_POINT_DEFAULT = 8  # ONION
 
 
 class UnknownBaseUnit(Exception): pass
@@ -737,8 +737,8 @@ def time_difference(distance_in_time, include_seconds):
         return "over %d years" % (round(distance_in_minutes / 525600))
 
 mainnet_block_explorers = {
-    'Bchain.info': ('https://explorer.deeponion.org/',
-                        {'tx': 'ONION/tx/', 'addr': 'ONION/addr/'}),
+    'explorer.deeponion.org': ('https://explorer.deeponion.org/',
+                        {'tx': 'tx/', 'addr': 'address/'}),
 }
 
 testnet_block_explorers = {
@@ -750,7 +750,7 @@ def block_explorer_info():
 
 def block_explorer(config: 'SimpleConfig') -> str:
     from . import constants
-    default_ = 'Blockchair.com' if not constants.net.TESTNET else 'LiteCore'
+    default_ = 'explorer.deeponion.org' if not constants.net.TESTNET else 'explorer.deeponion.org'
     be_key = config.get('block_explorer', default_)
     be = block_explorer_info().get(be_key)
     return be_key if be is not None else default_

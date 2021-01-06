@@ -305,7 +305,6 @@ def sha256d(x: Union[bytes, str]) -> bytes:
     out = bytes(sha256(sha256(x)))
     return out
 
-
 def hash_160(x: bytes) -> bytes:
     return ripemd(sha256(x))
 
