@@ -315,7 +315,7 @@ class Blockchain(Logger):
 
     @classmethod
     def verify_header(cls, header: dict, prev_hash: str, target: int, expected_header_hash: str=None) -> None:
-        return True 
+        return True #no verify DeepOnion edit
         _hash = hash_header(header)
         #_powhash = pow_hash_header(header) #DeepOnion edit
         if expected_header_hash and expected_header_hash != _hash:
@@ -636,17 +636,20 @@ class Blockchain(Logger):
         if height == 0:
             return hash_header(header) == constants.net.GENESIS
         try:
-            prev_hash = self.get_hash(height - 1)
+            #prev_hash = self.get_hash(height - 1)
+            pass
         except:
             return False
-        if prev_hash != header.get('prev_block_hash'):
-            return False
+        #if prev_hash != header.get('prev_block_hash'):
+            #return False
         try:
-            target = self.get_target(height // 2016 - 1)
+            #target = self.get_target(height // 2016 - 1)
+            pass
         except MissingHeader:
             return False
         try:
-            self.verify_header(header, prev_hash, target)
+            #self.verify_header(header, prev_hash, target)
+            pass
         except BaseException as e:
             return False
         return True
