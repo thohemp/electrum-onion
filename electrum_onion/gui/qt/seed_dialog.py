@@ -251,13 +251,8 @@ class KeysLayout(QVBoxLayout):
 
 class SeedDialog(WindowModalDialog):
 
-<<<<<<< HEAD:electrum_onion/gui/qt/seed_dialog.py
-    def __init__(self, parent, seed, passphrase):
-        WindowModalDialog.__init__(self, parent, ('electrum-onion - ' + _('Seed')))
-=======
     def __init__(self, parent, seed, passphrase, *, config: 'SimpleConfig'):
-        WindowModalDialog.__init__(self, parent, ('Electrum-LTC - ' + _('Seed')))
->>>>>>> 7f462391a686c5ee8d23fb6f43fd5bc99b193841:electrum_onion/gui/qt/seed_dialog.py
+        WindowModalDialog.__init__(self, parent, ('Electrum-ONION - ' + _('Seed')))
         self.setMinimumWidth(400)
         vbox = QVBoxLayout(self)
         title =  _("Your wallet generation seed is:")

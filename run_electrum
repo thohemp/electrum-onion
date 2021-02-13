@@ -76,19 +76,19 @@ if not is_android:
     check_imports()
 
 
-from electrum_onionon.logging import get_logger, configure_logging
-from electrum_onionon import util
-from electrum_onionon import constants
-from electrum_onionon import SimpleConfig
-from electrum_onionon.wallet_db import WalletDB
-from electrum_onionon.wallet import Wallet
-from electrum_onionon.storage import WalletStorage
-from electrum_onionon.util import print_msg, print_stderr, json_encode, json_decode, UserCancelled
-from electrum_onionon.util import InvalidPassword, BITCOIN_BIP21_URI_SCHEME
-from electrum_onionon.commands import get_parser, known_commands, Commands, config_variables
-from electrum_onionon import daemon
-from electrum_onionon import keystore
-from electrum_onionon.util import create_and_start_event_loop
+from electrum_onion.logging import get_logger, configure_logging
+from electrum_onion import util
+from electrum_onion import constants
+from electrum_onion import SimpleConfig
+from electrum_onion.wallet_db import WalletDB
+from electrum_onion.wallet import Wallet
+from electrum_onion.storage import WalletStorage
+from electrum_onion.util import print_msg, print_stderr, json_encode, json_decode, UserCancelled
+from electrum_onion.util import InvalidPassword, BITCOIN_BIP21_URI_SCHEME
+from electrum_onion.commands import get_parser, known_commands, Commands, config_variables
+from electrum_onion import daemon
+from electrum_onion import keystore
+from electrum_onion.util import create_and_start_event_loop
 
 if TYPE_CHECKING:
     import threading

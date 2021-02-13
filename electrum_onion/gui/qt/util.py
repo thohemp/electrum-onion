@@ -24,14 +24,14 @@ from PyQt5.QtWidgets import (QPushButton, QLabel, QMessageBox, QHBoxLayout,
                              QHeaderView, QApplication, QToolTip, QTreeWidget, QStyledItemDelegate,
                              QMenu)
 
-from electrum_onionon.i18n import _, languages
-from electrum_onionon.util import FileImportFailed, FileExportFailed, make_aiohttp_session, resource_path
-from electrum_onionon.invoices import PR_UNPAID, PR_PAID, PR_EXPIRED, PR_INFLIGHT, PR_UNKNOWN, PR_FAILED, PR_ROUTING, PR_UNCONFIRMED
+from electrum_onion.i18n import _, languages
+from electrum_onion.util import FileImportFailed, FileExportFailed, make_aiohttp_session, resource_path
+from electrum_onion.invoices import PR_UNPAID, PR_PAID, PR_EXPIRED, PR_INFLIGHT, PR_UNKNOWN, PR_FAILED, PR_ROUTING, PR_UNCONFIRMED
 
 if TYPE_CHECKING:
     from .main_window import ElectrumWindow
     from .installwizard import InstallWizard
-    from electrum_onionon.simple_config import SimpleConfig
+    from electrum_onion.simple_config import SimpleConfig
 
 
 if platform.system() == 'Windows':
@@ -976,10 +976,6 @@ def import_meta_gui(electrum_window: 'ElectrumWindow', title, importer, on_succe
 
 def export_meta_gui(electrum_window: 'ElectrumWindow', title, exporter):
     filter_ = "JSON (*.json);;All files (*)"
-<<<<<<< HEAD:electrum_onion/gui/qt/util.py
-    filename = electrum_window.getSaveFileName(_("Select file to save your {}").format(title),
-                                               'electrum-onion_{}.json'.format(title), filter_)
-=======
     filename = getSaveFileName(
         parent=electrum_window,
         title=_("Select file to save your {}").format(title),
@@ -987,7 +983,6 @@ def export_meta_gui(electrum_window: 'ElectrumWindow', title, exporter):
         filter=filter_,
         config=electrum_window.config,
     )
->>>>>>> 7f462391a686c5ee8d23fb6f43fd5bc99b193841:electrum_onionon/gui/qt/util.py
     if not filename:
         return
     try:

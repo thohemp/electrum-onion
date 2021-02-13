@@ -288,15 +288,9 @@ class ChannelsList(MyTreeView):
         self.can_send_label = QLabel('')
         h.addWidget(self.can_send_label)
         h.addStretch()
-<<<<<<< HEAD:electrum_onion/gui/qt/channels_list.py
-        # deeponion: disable swap for now
-        # self.swap_button = EnterButton(_('Swap'), self.swap_dialog)
-        # self.swap_button.setEnabled(self.parent.wallet.has_lightning())
-=======
         self.swap_button = EnterButton(_('Swap'), self.swap_dialog)
         self.swap_button.setToolTip("Have at least one channel to do swaps.")
         self.swap_button.setDisabled(True)
->>>>>>> 7f462391a686c5ee8d23fb6f43fd5bc99b193841:electrum_onion/gui/qt/channels_list.py
         self.new_channel_button = EnterButton(_('Open Channel'), self.new_channel_with_warning)
         self.new_channel_button.setEnabled(self.parent.wallet.has_lightning())
         h.addWidget(self.new_channel_button)
