@@ -1,11 +1,22 @@
+<<<<<<< HEAD:electrum_onion/gui/kivy/uix/ui_screens/send.kv
 #:import _ electrum_onion.gui.kivy.i18n._
 #:import pr_color electrum_onion.invoices.pr_color
 #:import PR_UNKNOWN electrum_onion.invoices.PR_UNKNOWN
+=======
+#:import _ electrum_onion.gui.kivy.i18n._
+#:import KIVY_GUI_PATH electrum_onion.gui.kivy.KIVY_GUI_PATH
+#:import pr_color electrum_onion.invoices.pr_color
+#:import PR_UNKNOWN electrum_onion.invoices.PR_UNKNOWN
+>>>>>>> 7f462391a686c5ee8d23fb6f43fd5bc99b193841:electrum_onion/gui/kivy/uix/ui_screens/send.kv
 #:import Factory kivy.factory.Factory
 #:import Decimal decimal.Decimal
 #:set btc_symbol chr(171)
 #:set mbtc_symbol chr(187)
+<<<<<<< HEAD:electrum_onion/gui/kivy/uix/ui_screens/send.kv
 #:set font_light 'electrum_onion/gui/kivy/data/fonts/Roboto-Condensed.ttf'
+=======
+#:set font_light f'{KIVY_GUI_PATH}/data/fonts/Roboto-Condensed.ttf'
+>>>>>>> 7f462391a686c5ee8d23fb6f43fd5bc99b193841:electrum_onion/gui/kivy/uix/ui_screens/send.kv
 
 <PaymentLabel@Label>
     #color: .305, .309, .309, 1
@@ -15,6 +26,7 @@
 
 <PaymentItem@CardItem>
     key: ''
+    address: ''
     memo: ''
     amount: ''
     status: PR_UNKNOWN
@@ -31,7 +43,7 @@
             shorten_from: 'right'
         Widget
         PaymentLabel:
-            text: root.key
+            text: root.address
             color: .699, .699, .699, 1
             font_size: '13sp'
             shorten: True
@@ -84,7 +96,11 @@
                 height: blue_bottom.item_height
                 spacing: '5dp'
                 Image:
+<<<<<<< HEAD:electrum_onion/gui/kivy/uix/ui_screens/send.kv
                     source: 'atlas://electrum_onion/gui/kivy/theming/light/lightning' if root.is_lightning else 'atlas://electrum_onion/gui/kivy/theming/light/globe'
+=======
+                    source: f'atlas://{KIVY_GUI_PATH}/theming/light/lightning' if root.is_lightning else f'atlas://{KIVY_GUI_PATH}/theming/light/globe'
+>>>>>>> 7f462391a686c5ee8d23fb6f43fd5bc99b193841:electrum_onion/gui/kivy/uix/ui_screens/send.kv
                     size_hint: None, None
                     size: '22dp', '22dp'
                     pos_hint: {'center_y': .5}
@@ -101,7 +117,11 @@
                 height: blue_bottom.item_height
                 spacing: '5dp'
                 Image:
+<<<<<<< HEAD:electrum_onion/gui/kivy/uix/ui_screens/send.kv
                     source: 'atlas://electrum_onion/gui/kivy/theming/light/calculator'
+=======
+                    source: f'atlas://{KIVY_GUI_PATH}/theming/light/calculator'
+>>>>>>> 7f462391a686c5ee8d23fb6f43fd5bc99b193841:electrum_onion/gui/kivy/uix/ui_screens/send.kv
                     opacity: 0.7
                     size_hint: None, None
                     size: '22dp', '22dp'
@@ -110,8 +130,8 @@
                     id: amount_e
                     default_text: _('Amount')
                     text: s.amount if s.amount else _('Amount')
-                    disabled: root.is_bip70 or (root.is_lightning and not s.amount)
-                    on_release: Clock.schedule_once(lambda dt: app.amount_dialog(s, True))
+                    disabled: root.is_bip70 or (root.is_lightning and s.amount)
+                    on_release: Clock.schedule_once(lambda dt: app.amount_dialog(s, not root.is_lightning))
             CardSeparator:
                 color: blue_bottom.foreground_color
             BoxLayout:
@@ -120,7 +140,11 @@
                 height: blue_bottom.item_height
                 spacing: '5dp'
                 Image:
+<<<<<<< HEAD:electrum_onion/gui/kivy/uix/ui_screens/send.kv
                     source: 'atlas://electrum_onion/gui/kivy/theming/light/pen'
+=======
+                    source: f'atlas://{KIVY_GUI_PATH}/theming/light/pen'
+>>>>>>> 7f462391a686c5ee8d23fb6f43fd5bc99b193841:electrum_onion/gui/kivy/uix/ui_screens/send.kv
                     size_hint: None, None
                     size: '22dp', '22dp'
                     pos_hint: {'center_y': .5}
@@ -129,6 +153,7 @@
                     text: s.message if s.message else (_('No Description') if root.is_locked else _('Description'))
                     disabled: root.is_locked
                     on_release: Clock.schedule_once(lambda dt: app.description_dialog(s))
+<<<<<<< HEAD:electrum_onion/gui/kivy/uix/ui_screens/send.kv
             CardSeparator:
                 color: blue_bottom.foreground_color
             BoxLayout:
@@ -145,10 +170,13 @@
                     default_text: _('Fee')
                     text: app.fee_status if not root.is_lightning else ''
                     on_release: Clock.schedule_once(lambda dt: app.fee_dialog(s, True)) if not root.is_lightning else None
+=======
+>>>>>>> 7f462391a686c5ee8d23fb6f43fd5bc99b193841:electrum_onion/gui/kivy/uix/ui_screens/send.kv
         BoxLayout:
             size_hint: 1, None
             height: '48dp'
             IconButton:
+<<<<<<< HEAD:electrum_onion/gui/kivy/uix/ui_screens/send.kv
                 icon: 'atlas://electrum_onion/gui/kivy/theming/light/delete'
                 size_hint: 0.5, 1
                 on_release: Clock.schedule_once(lambda dt: s.clear_invoices_dialog())
@@ -163,6 +191,18 @@
             IconButton:
                 size_hint: 0.5, 1
                 icon: 'atlas://electrum_onion/gui/kivy/theming/light/copy'
+=======
+                size_hint: 0.5, 1
+                on_release: s.do_save()
+                icon: f'atlas://{KIVY_GUI_PATH}/theming/light/save'
+            IconButton:
+                size_hint: 0.5, 1
+                on_release: s.do_clear()
+                icon: f'atlas://{KIVY_GUI_PATH}/theming/light/closebutton'
+            IconButton:
+                size_hint: 0.5, 1
+                icon: f'atlas://{KIVY_GUI_PATH}/theming/light/copy'
+>>>>>>> 7f462391a686c5ee8d23fb6f43fd5bc99b193841:electrum_onion/gui/kivy/uix/ui_screens/send.kv
                 on_release: s.do_paste()
             Button:
                 id: qr

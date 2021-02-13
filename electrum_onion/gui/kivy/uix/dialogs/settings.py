@@ -9,6 +9,8 @@ from electrum_onion.gui.kivy.i18n import _
 from electrum_onion.plugin import run_hook
 from electrum_onion import coinchooser
 
+from electrum_onion.gui.kivy import KIVY_GUI_PATH
+
 from .choice_dialog import ChoiceDialog
 
 Builder.load_string('''
@@ -48,6 +50,11 @@ Builder.load_string('''
                     action: partial(root.unit_dialog, self)
                 CardSeparator
                 SettingsItem:
+                    title: _('Onchain fees') + ': ' + app.fee_status
+                    description: _('Choose how transaction fees are estimated')
+                    action: lambda dt: app.fee_dialog()
+                CardSeparator
+                SettingsItem:
                     status: root.fx_status()
                     title: _('Fiat Currency') + ': ' + self.status
                     description: _("Display amounts in fiat currency.")
@@ -85,7 +92,7 @@ Builder.load_string('''
                 CardSeparator
                 SettingsItem:
                     title: _('Password')
-                    description: _("Change wallet password.")
+                    description: _('Change your password') if app._use_single_password else _("Change your password for this wallet.")
                     action: root.change_password
                 CardSeparator
                 SettingsItem:
@@ -193,7 +200,7 @@ class SettingsDialog(Factory.Popup):
                 net_params = net_params._replace(proxy=proxy)
                 network.run_from_another_thread(network.set_parameters(net_params))
                 item.status = self.proxy_status()
-            popup = Builder.load_file('electrum_onion/gui/kivy/uix/ui_screens/proxy.kv')
+            popup = Builder.load_file(KIVY_GUI_PATH + '/uix/ui_screens/proxy.kv')
             popup.ids.mode.text = proxy.get('mode') if proxy else 'None'
             popup.ids.host.text = proxy.get('host') if proxy else ''
             popup.ids.port.text = proxy.get('port') if proxy else ''
@@ -214,9 +221,6 @@ class SettingsDialog(Factory.Popup):
         fullname = dd.get('fullname')
         d = CheckBoxDialog(fullname, descr, status, callback)
         d.open()
-
-    def fee_status(self):
-        return self.config.get_fee_status()
 
     def boolean_dialog(self, name, title, message, dt):
         from .checkbox_dialog import CheckBoxDialog

@@ -79,11 +79,7 @@ class ChannelsList(MyTreeView):
             labels[subject] = label
         status = chan.get_state_for_GUI()
         closed = chan.is_closed()
-        if self.network and self.network.has_channel_db():
-            node_info = self.parent.network.channel_db.get_node_info_for_node_id(chan.node_id)
-            node_alias = (node_info.alias if node_info else '') or ''
-        else:
-            node_alias = ''
+        node_alias = self.lnworker.get_node_alias(chan.node_id)
         return [
             chan.short_id_for_GUI(),
             node_alias,
@@ -225,6 +221,7 @@ class ChannelsList(MyTreeView):
             self._update_chan_frozen_bg(chan=chan, items=items)
         if wallet.lnworker:
             self.update_can_send(wallet.lnworker)
+            self.update_swap_button(wallet.lnworker)
 
     @QtCore.pyqtSlot()
     def on_gossip_db(self):
@@ -280,17 +277,30 @@ class ChannelsList(MyTreeView):
               + ' ' + self.parent.base_unit()
         self.can_send_label.setText(msg)
 
+    def update_swap_button(self, lnworker: LNWallet):
+        if lnworker.num_sats_can_send() or lnworker.num_sats_can_receive():
+            self.swap_button.setEnabled(True)
+        else:
+            self.swap_button.setEnabled(False)
+
     def get_toolbar(self):
         h = QHBoxLayout()
         self.can_send_label = QLabel('')
         h.addWidget(self.can_send_label)
         h.addStretch()
+<<<<<<< HEAD:electrum_onion/gui/qt/channels_list.py
         # deeponion: disable swap for now
         # self.swap_button = EnterButton(_('Swap'), self.swap_dialog)
         # self.swap_button.setEnabled(self.parent.wallet.has_lightning())
+=======
+        self.swap_button = EnterButton(_('Swap'), self.swap_dialog)
+        self.swap_button.setToolTip("Have at least one channel to do swaps.")
+        self.swap_button.setDisabled(True)
+>>>>>>> 7f462391a686c5ee8d23fb6f43fd5bc99b193841:electrum_onion/gui/qt/channels_list.py
         self.new_channel_button = EnterButton(_('Open Channel'), self.new_channel_with_warning)
         self.new_channel_button.setEnabled(self.parent.wallet.has_lightning())
         h.addWidget(self.new_channel_button)
+        # Litecoin: disable swap for now
         # h.addWidget(self.swap_button)
         return h
 

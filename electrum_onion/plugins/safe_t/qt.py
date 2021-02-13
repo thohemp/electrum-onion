@@ -8,11 +8,19 @@ from PyQt5.QtWidgets import (QVBoxLayout, QLabel, QGridLayout, QPushButton,
                              QTextEdit, QLineEdit, QRadioButton, QCheckBox, QWidget,
                              QMessageBox, QFileDialog, QSlider, QTabWidget)
 
+<<<<<<< HEAD:electrum_onion/plugins/safe_t/qt.py
 from electrum_onion.gui.qt.util import (WindowModalDialog, WWLabel, Buttons, CancelButton,
                                       OkButton, CloseButton)
 from electrum_onion.i18n import _
 from electrum_onion.plugin import hook
 from electrum_onion.util import bh2u
+=======
+from electrum_onion.gui.qt.util import (WindowModalDialog, WWLabel, Buttons, CancelButton,
+                                      OkButton, CloseButton, getOpenFileName)
+from electrum_onion.i18n import _
+from electrum_onion.plugin import hook
+from electrum_onion.util import bh2u
+>>>>>>> 7f462391a686c5ee8d23fb6f43fd5bc99b193841:electrum_onion/plugins/safe_t/qt.py
 
 from ..hw_wallet.qt import QtHandlerBase, QtPluginBase
 from ..hw_wallet.plugin import only_hook_if_libraries_available
@@ -276,8 +284,11 @@ class SettingsDialog(WindowModalDialog):
             invoke_client('toggle_passphrase', unpair_after=currently_enabled)
 
         def change_homescreen():
-            dialog = QFileDialog(self, _("Choose Homescreen"))
-            filename, __ = dialog.getOpenFileName()
+            filename = getOpenFileName(
+                parent=self,
+                title=_("Choose Homescreen"),
+                config=config,
+            )
             if not filename:
                 return  # user cancelled
 

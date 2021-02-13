@@ -20,5 +20,6 @@ rm -rf ~/.DeepOnion/regtest
 screen -S DeepOniond -X quit || true
 screen -S DeepOniond -m -d DeepOniond -regtest
 sleep 6
+DeepOnion-cli createwallet test_wallet
 addr=$(DeepOnion-cli getnewaddress)
 DeepOnion-cli generatetoaddress 150 $addr > /dev/null

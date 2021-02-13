@@ -29,6 +29,7 @@ PR_PAID     = 3     # send and propagated
 PR_INFLIGHT = 4     # unconfirmed
 PR_FAILED   = 5
 PR_ROUTING  = 6
+PR_UNCONFIRMED = 7
 
 pr_color = {
     PR_UNPAID:   (.7, .7, .7, 1),
@@ -38,6 +39,7 @@ pr_color = {
     PR_INFLIGHT: (.9, .6, .3, 1),
     PR_FAILED:   (.9, .2, .2, 1),
     PR_ROUTING: (.9, .6, .3, 1),
+    PR_UNCONFIRMED: (.9, .6, .3, 1),
 }
 
 pr_tooltips = {
@@ -48,6 +50,7 @@ pr_tooltips = {
     PR_INFLIGHT:_('In progress'),
     PR_FAILED:_('Failed'),
     PR_ROUTING: _('Computing route...'),
+    PR_UNCONFIRMED: _('Unconfirmed'),
 }
 
 PR_DEFAULT_EXPIRATION_WHEN_CREATING = 24*60*60  # 1 day
@@ -118,16 +121,17 @@ class OnchainInvoice(Invoice):
     outputs = attr.ib(kw_only=True, converter=_decode_outputs)  # type: List[PartialTxOutput]
     bip70 = attr.ib(type=str, kw_only=True)  # type: Optional[str]
     requestor = attr.ib(type=str, kw_only=True)  # type: Optional[str]
+    height = attr.ib(type=int, kw_only=True, validator=attr.validators.instance_of(int))
 
     def get_address(self) -> str:
-        assert len(self.outputs) == 1
+        """returns the first address, to be displayed in GUI"""
         return self.outputs[0].address
 
     def get_amount_sat(self) -> Union[int, str]:
         return self.amount_sat or 0
 
     @classmethod
-    def from_bip70_payreq(cls, pr: 'PaymentRequest') -> 'OnchainInvoice':
+    def from_bip70_payreq(cls, pr: 'PaymentRequest', height:int) -> 'OnchainInvoice':
         return OnchainInvoice(
             type=PR_TYPE_ONCHAIN,
             amount_sat=pr.get_amount(),
@@ -138,6 +142,7 @@ class OnchainInvoice(Invoice):
             exp=pr.get_expiration_date() - pr.get_time(),
             bip70=pr.raw.hex(),
             requestor=pr.get_requestor(),
+            height=height,
         )
 
 @attr.s

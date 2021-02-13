@@ -80,7 +80,8 @@ class NetworkTimeout:
     class Generic:
         NORMAL = 30
         RELAXED = 45
-        MOST_RELAXED = 180
+        MOST_RELAXED = 600
+
     class Urgent(Generic):
         NORMAL = 10
         RELAXED = 20
@@ -350,7 +351,7 @@ class Interface(Logger):
 
     def __init__(self, *, network: 'Network', server: ServerAddr, proxy: Optional[dict]):
         self.ready = asyncio.Future()
-        self.got_disconnected = asyncio.Future()
+        self.got_disconnected = asyncio.Event()
         self.server = server
         Logger.__init__(self)
         assert network.config.path
@@ -484,9 +485,8 @@ class Interface(Logger):
                 self.logger.warning(f"disconnecting due to {repr(e)}")
                 self.logger.debug(f"(disconnect) trace for {repr(e)}", exc_info=True)
             finally:
+                self.got_disconnected.set()
                 await self.network.connection_down(self)
-                if not self.got_disconnected.done():
-                    self.got_disconnected.set_result(1)
                 # if was not 'ready' yet, schedule waiting coroutines:
                 self.ready.cancel()
         return wrapper_func
@@ -616,7 +616,8 @@ class Interface(Logger):
         return conn, res['count']
 
     def is_main_server(self) -> bool:
-        return self.network.default_server == self.server
+        return (self.network.interface == self or
+                self.network.interface is None and self.network.default_server == self.server)
 
     async def open_session(self, sslc, exit_early=False):
         session_factory = lambda *args, iface=self, **kwargs: NotificationSession(*args, **kwargs, interface=iface)
@@ -678,6 +679,9 @@ class Interface(Logger):
             await asyncio.sleep(60)
 
     async def close(self):
+        """Closes the connection and waits for it to be closed.
+        We try to flush buffered data to the wire, so this can take some time.
+        """
         if self.session:
             await self.session.close()
         # monitor_connection will cancel tasks
@@ -911,6 +915,8 @@ class Interface(Logger):
             raise Exception(f"{repr(tx_hash)} is not a txid")
         raw = await self.session.send_request('blockchain.transaction.get', [tx_hash], timeout=timeout)
         # validate response
+        if not is_hex_str(raw):
+            raise RequestCorrupted(f"received garbage (non-hex) as tx data (txid {tx_hash}): {raw!r}")
         tx = Transaction(raw)
         try:
             tx.deserialize()  # see if raises

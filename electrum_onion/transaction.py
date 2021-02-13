@@ -177,6 +177,7 @@ class TxOutpoint(NamedTuple):
     @classmethod
     def from_str(cls, s: str) -> 'TxOutpoint':
         hash_str, idx_str = s.split(':')
+        assert len(hash_str) == 64, f"{hash_str} should be a sha256 hash"
         return TxOutpoint(txid=bfh(hash_str),
                           out_idx=int(idx_str))
 
@@ -424,6 +425,8 @@ SCRIPTPUBKEY_TEMPLATE_P2PKH = [opcodes.OP_DUP, opcodes.OP_HASH160,
                                opcodes.OP_EQUALVERIFY, opcodes.OP_CHECKSIG]
 SCRIPTPUBKEY_TEMPLATE_P2SH = [opcodes.OP_HASH160, OPPushDataGeneric(lambda x: x == 20), opcodes.OP_EQUAL]
 SCRIPTPUBKEY_TEMPLATE_WITNESS_V0 = [opcodes.OP_0, OPPushDataGeneric(lambda x: x in (20, 32))]
+SCRIPTPUBKEY_TEMPLATE_P2WPKH = [opcodes.OP_0, OPPushDataGeneric(lambda x: x == 20)]
+SCRIPTPUBKEY_TEMPLATE_P2WSH = [opcodes.OP_0, OPPushDataGeneric(lambda x: x == 32)]
 
 
 def match_script_against_template(script, template) -> bool:
@@ -447,6 +450,22 @@ def match_script_against_template(script, template) -> bool:
             return False
     return True
 
+def get_script_type_from_output_script(_bytes: bytes) -> Optional[str]:
+    if _bytes is None:
+        return None
+    try:
+        decoded = [x for x in script_GetOp(_bytes)]
+    except MalformedBitcoinScript:
+        return None
+    if match_script_against_template(decoded, SCRIPTPUBKEY_TEMPLATE_P2PKH):
+        return 'p2pkh'
+    if match_script_against_template(decoded, SCRIPTPUBKEY_TEMPLATE_P2SH):
+        return 'p2sh'
+    if match_script_against_template(decoded, SCRIPTPUBKEY_TEMPLATE_P2WPKH):
+        return 'p2wpkh'
+    if match_script_against_template(decoded, SCRIPTPUBKEY_TEMPLATE_P2WSH):
+        return 'p2wsh'
+    return None
 
 def get_address_from_output_script(_bytes: bytes, *, net=None) -> Optional[str]:
     try:
@@ -846,7 +865,7 @@ class Transaction:
             return None
         return bh2u(sha256d(bfh(ser))[::-1])
 
-    def add_info_from_wallet(self, wallet: 'Abstract_Wallet') -> None:
+    def add_info_from_wallet(self, wallet: 'Abstract_Wallet', **kwargs) -> None:
         return  # no-op
 
     def is_final(self):
@@ -1175,6 +1194,10 @@ class PartialTxInput(TxInput, PSBTSection):
 
     @classmethod
     def from_txin(cls, txin: TxInput, *, strip_witness: bool = True) -> 'PartialTxInput':
+        # FIXME: if strip_witness is True, res.is_segwit() will return False,
+        # and res.estimated_size() will return an incorrect value. These methods
+        # will return the correct values after we call add_input_info(). (see dscancel and bump_fee)
+        # This is very fragile: the value returned by estimate_size() depends on the calling order.
         res = PartialTxInput(prevout=txin.prevout,
                              script_sig=None if strip_witness else txin.script_sig,
                              nsequence=txin.nsequence,
@@ -1329,6 +1352,22 @@ class PartialTxInput(TxInput, PSBTSection):
         if self.witness_utxo:
             return self.witness_utxo.scriptpubkey
         return None
+
+    def set_script_type(self) -> None:
+        if self.scriptpubkey is None:
+            return
+        type = get_script_type_from_output_script(self.scriptpubkey)
+        inner_type = None
+        if type is not None:
+            if type == 'p2sh':
+                inner_type = get_script_type_from_output_script(self.redeem_script)
+            elif type == 'p2wsh':
+                inner_type = get_script_type_from_output_script(self.witness_script)
+            if inner_type is not None:
+                type = inner_type + '-' + type
+            if type in ('p2pkh', 'p2wpkh-p2sh', 'p2wpkh'):
+                self.script_type = type
+        return
 
     def is_complete(self) -> bool:
         if self.script_sig is not None and self.witness is not None:
@@ -1562,7 +1601,8 @@ class PartialTransaction(Transaction):
     @classmethod
     def from_tx(cls, tx: Transaction) -> 'PartialTransaction':
         res = cls()
-        res._inputs = [PartialTxInput.from_txin(txin) for txin in tx.inputs()]
+        res._inputs = [PartialTxInput.from_txin(txin, strip_witness=True)
+                       for txin in tx.inputs()]
         res._outputs = [PartialTxOutput.from_txout(txout) for txout in tx.outputs()]
         res.version = tx.version
         res.ntime = tx.ntime
@@ -1927,29 +1967,40 @@ class PartialTransaction(Transaction):
         txin.witness = None
         self.invalidate_ser_cache()
 
-    def add_info_from_wallet(self, wallet: 'Abstract_Wallet', *,
-                             include_xpubs_and_full_paths: bool = False) -> None:
+    def add_info_from_wallet(
+            self,
+            wallet: 'Abstract_Wallet',
+            *,
+            include_xpubs: bool = False,
+            ignore_network_issues: bool = True,
+    ) -> None:
         if self.is_complete():
             return
-        only_der_suffix = not include_xpubs_and_full_paths
         # only include xpubs for multisig wallets; currently only they need it in practice
         # note: coldcard fw have a limitation that if they are included then all
         #       inputs are assumed to be multisig... https://github.com/spesmilo/electrum/pull/5440#issuecomment-549504761
         # note: trezor plugin needs xpubs included, if there are multisig inputs/change_outputs
         from .wallet import Multisig_Wallet
-        if include_xpubs_and_full_paths and isinstance(wallet, Multisig_Wallet):
+        if include_xpubs and isinstance(wallet, Multisig_Wallet):
             from .keystore import Xpub
             for ks in wallet.get_keystores():
                 if isinstance(ks, Xpub):
-                    fp_bytes, der_full = ks.get_fp_and_derivation_to_be_used_in_partial_tx(der_suffix=[],
-                                                                                           only_der_suffix=only_der_suffix)
-                    xpub = ks.get_xpub_to_be_used_in_partial_tx(only_der_suffix=only_der_suffix)
+                    fp_bytes, der_full = ks.get_fp_and_derivation_to_be_used_in_partial_tx(
+                        der_suffix=[], only_der_suffix=False)
+                    xpub = ks.get_xpub_to_be_used_in_partial_tx(only_der_suffix=False)
                     bip32node = BIP32Node.from_xkey(xpub)
                     self.xpubs[bip32node] = (fp_bytes, der_full)
         for txin in self.inputs():
-            wallet.add_input_info(txin, only_der_suffix=only_der_suffix)
+            wallet.add_input_info(
+                txin,
+                only_der_suffix=False,
+                ignore_network_issues=ignore_network_issues,
+            )
         for txout in self.outputs():
-            wallet.add_output_info(txout, only_der_suffix=only_der_suffix)
+            wallet.add_output_info(
+                txout,
+                only_der_suffix=False,
+            )
 
     def remove_xpubs_and_bip32_paths(self) -> None:
         self.xpubs.clear()
@@ -1989,6 +2040,14 @@ class PartialTransaction(Transaction):
         assert not self.is_complete()
         self.invalidate_ser_cache()
 
+    def update_txin_script_type(self):
+        """Determine the script_type of each input by analyzing the scripts.
+        It updates all tx-Inputs, NOT only the wallet owned, if the
+        scriptpubkey is present.
+        """
+        for txin in self.inputs():
+            if txin.script_type in ('unknown', 'address'):
+                txin.set_script_type()
 
 def pack_bip32_root_fingerprint_and_int_path(xfp: bytes, path: Sequence[int]) -> bytes:
     if len(xfp) != 4:

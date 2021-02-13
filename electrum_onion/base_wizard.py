@@ -249,7 +249,7 @@ class BaseWizard(Logger):
                 self.data['addresses'][addr] = {'type':txin_type, 'pubkey':pubkey}
             self.keystores.append(k)
         else:
-            return self.terminate()
+            return self.terminate(aborted=True)
         return self.run('create_wallet')
 
     def restore_from_key(self):
@@ -480,6 +480,12 @@ class BaseWizard(Logger):
             'label': label,
             'soft_device_id': soft_device_id,
         }
+        try:
+            client.manipulate_keystore_dict_during_wizard_setup(d)
+        except Exception as e:
+            self.logger.exception('')
+            self.show_error(e)
+            raise ChooseHwDeviceAgain()
         k = hardware_keystore(d)
         self.on_keystore(k)
 
@@ -503,13 +509,13 @@ class BaseWizard(Logger):
         self.opt_ext = True
         is_cosigning_seed = lambda x: mnemonic.seed_type(x) in ['standard', 'segwit']
         test = mnemonic.is_seed if self.wallet_type == 'standard' else is_cosigning_seed
-        self.restore_seed_dialog(run_next=self.on_restore_seed, test=test)
+        f = lambda *args: self.run('on_restore_seed', *args)
+        self.restore_seed_dialog(run_next=f, test=test)
 
     def on_restore_seed(self, seed, is_bip39, is_ext):
         self.seed_type = 'bip39' if is_bip39 else mnemonic.seed_type(seed)
         if self.seed_type == 'bip39':
-            def f(passphrase):
-                self.on_restore_bip39(seed, passphrase)
+            f = lambda passphrase: self.run('on_restore_bip39', seed, passphrase)
             self.passphrase_dialog(run_next=f, is_restoring=True) if is_ext else f('')
         elif self.seed_type in ['standard', 'segwit']:
             f = lambda passphrase: self.run('create_keystore', seed, passphrase)
@@ -679,6 +685,7 @@ class BaseWizard(Logger):
     def show_xpub_and_add_cosigners(self, xpub):
         self.show_xpub_dialog(xpub=xpub, run_next=lambda x: self.run('choose_keystore'))
 
+<<<<<<< HEAD:electrum_onion/base_wizard.py
     def choose_seed_type(self, message=None, choices=None):
         title = _('Choose Seed type')
         if message is None:
@@ -697,12 +704,18 @@ class BaseWizard(Logger):
 
     def create_segwit_seed(self): self.create_seed('segwit')
     def create_standard_seed(self): self.create_seed('standard')
+=======
+    def choose_seed_type(self):
+        seed_type = 'standard' if self.config.get('nosegwit') else 'segwit'
+        self.create_seed(seed_type)
+>>>>>>> 7f462391a686c5ee8d23fb6f43fd5bc99b193841:electrum_onion/base_wizard.py
 
     def create_seed(self, seed_type):
         from . import mnemonic
         self.seed_type = seed_type
-        seed = mnemonic.Mnemonic('en').make_seed(self.seed_type)
+        seed = mnemonic.Mnemonic('en').make_seed(seed_type=self.seed_type)
         self.opt_bip39 = False
+        self.opt_ext = True
         f = lambda x: self.request_passphrase(seed, x)
         self.show_seed_dialog(run_next=f, seed_text=seed)
 
@@ -715,7 +728,7 @@ class BaseWizard(Logger):
 
     def confirm_seed(self, seed, passphrase):
         f = lambda x: self.confirm_passphrase(seed, passphrase)
-        self.confirm_seed_dialog(run_next=f, test=lambda x: x==seed)
+        self.confirm_seed_dialog(run_next=f, seed=seed if self.config.get('debug_seed') else '', test=lambda x: x==seed)
 
     def confirm_passphrase(self, seed, passphrase):
         f = lambda x: self.run('create_keystore', seed, x)

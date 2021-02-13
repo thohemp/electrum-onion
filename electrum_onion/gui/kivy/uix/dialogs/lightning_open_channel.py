@@ -9,6 +9,7 @@ from electrum_onion.util import bh2u
 from electrum_onion.bitcoin import COIN
 import electrum_onion.simple_config as config
 from electrum_onion.logging import Logger
+from electrum_onion.lnutil import ln_dummy_address
 
 from .label_dialog import LabelDialog
 
@@ -17,12 +18,15 @@ if TYPE_CHECKING:
 
 
 Builder.load_string('''
+#:import KIVY_GUI_PATH electrum_onion.gui.kivy.KIVY_GUI_PATH
+
 <LightningOpenChannelDialog@Popup>
     id: s
     name: 'lightning_open_channel'
     title: _('Open Lightning Channel')
     pubkey: ''
     amount: ''
+    is_max: False
     ipport: ''
     BoxLayout
         spacing: '12dp'
@@ -36,7 +40,7 @@ Builder.load_string('''
                 size_hint: 1, None
                 height: blue_bottom.item_height
                 Image:
-                    source: 'atlas://electrum_onion/gui/kivy/theming/light/globe'
+                    source: f'atlas://{KIVY_GUI_PATH}/theming/light/globe'
                     size_hint: None, None
                     size: '22dp', '22dp'
                     pos_hint: {'center_y': .5}
@@ -49,7 +53,7 @@ Builder.load_string('''
                 size_hint: 1, None
                 height: blue_bottom.item_height
                 Image:
-                    source: 'atlas://electrum_onion/gui/kivy/theming/light/calculator'
+                    source: f'atlas://{KIVY_GUI_PATH}/theming/light/calculator'
                     size_hint: None, None
                     size: '22dp', '22dp'
                     pos_hint: {'center_y': .5}
@@ -62,12 +66,12 @@ Builder.load_string('''
             size_hint: 1, None
             height: '48dp'
             IconButton:
-                icon: 'atlas://electrum_onion/gui/kivy/theming/light/copy'
+                icon: f'atlas://{KIVY_GUI_PATH}/theming/light/copy'
                 size_hint: 0.5, None
                 height: '48dp'
                 on_release: s.do_paste()
             IconButton:
-                icon: 'atlas://electrum_onion/gui/kivy/theming/light/camera'
+                icon: f'atlas://{KIVY_GUI_PATH}/theming/light/camera'
                 size_hint: 0.5, None
                 height: '48dp'
                 on_release: app.scan_qr(on_complete=s.on_qr)
@@ -154,19 +158,28 @@ class LightningOpenChannelDialog(Factory.Popup, Logger):
         conn_str = self.pubkey
         if self.ipport:
             conn_str += '@' + self.ipport.strip()
-        amount = self.app.get_amount(self.amount)
+        amount = '!' if self.is_max else self.app.get_amount(self.amount)
         self.app.protected('Create a new channel?', self.do_open_channel, (conn_str, amount))
         self.dismiss()
 
     def do_open_channel(self, conn_str, amount, password):
         coins = self.app.wallet.get_spendable_coins(None, nonlocal_only=True)
-        funding_tx = self.app.wallet.lnworker.mktx_for_open_channel(coins=coins, funding_sat=amount)
+        lnworker = self.app.wallet.lnworker
         try:
-            chan, funding_tx = self.app.wallet.lnworker.open_channel(connect_str=conn_str,
-                                                                     funding_tx=funding_tx,
-                                                                     funding_sat=amount,
-                                                                     push_amt_sat=0,
-                                                                     password=password)
+            funding_tx = lnworker.mktx_for_open_channel(coins=coins, funding_sat=amount)
+        except Exception as e:
+            self.logger.exception("Problem opening channel")
+            self.app.show_error(_('Problem opening channel: ') + '\n' + repr(e))
+            return
+        # read funding_sat from tx; converts '!' to int value
+        funding_sat = funding_tx.output_value_for_address(ln_dummy_address())
+        try:
+            chan, funding_tx = lnworker.open_channel(
+                connect_str=conn_str,
+                funding_tx=funding_tx,
+                funding_sat=funding_sat,
+                push_amt_sat=0,
+                password=password)
         except Exception as e:
             self.logger.exception("Problem opening channel")
             self.app.show_error(_('Problem opening channel: ') + '\n' + repr(e))

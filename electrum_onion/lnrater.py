@@ -10,16 +10,23 @@ from collections import defaultdict
 from pprint import pformat
 from random import choices
 from statistics import mean, median, stdev
-from typing import TYPE_CHECKING, Dict, NamedTuple, Tuple, List
+from typing import TYPE_CHECKING, Dict, NamedTuple, Tuple, List, Optional
+import sys
 import time
+
+if sys.version_info[:2] >= (3, 7):
+    from asyncio import get_running_loop
+else:
+    from asyncio import _get_running_loop as get_running_loop  # noqa: F401
 
 from .logging import Logger
 from .util import profiler
 from .lnrouter import fee_for_edge_msat
+from .lnutil import LnFeatures, ln_compare_features, IncompatibleLightningFeatures
 
 if TYPE_CHECKING:
     from .network import Network
-    from .channel_db import Policy
+    from .channel_db import Policy, NodeInfo
     from .lnchannel import ShortChannelID
     from .lnworker import LNWallet
 
@@ -119,7 +126,7 @@ class LNRater(Logger):
     async def _analyze_graph(self):
         await self.channel_db.data_loaded.wait()
         self._collect_policies_by_node()
-        loop = asyncio.get_running_loop()
+        loop = get_running_loop()
         # the analysis is run in an executor because it's costly
         await loop.run_in_executor(None, self._collect_purged_stats)
         self._rate_nodes()
@@ -214,9 +221,11 @@ class LNRater(Logger):
             heuristics = []
             heuristics_weights = []
 
-            # example of how we could construct a scalar score for nodes
-            # this is probably not what we want to to, this is roughly
-            # preferential attachment
+            # Construct an average score which leads to recommendation of nodes
+            # with low fees, large capacity and reasonable number of channels.
+            # This is somewhat akin to preferential attachment, but low fee
+            # nodes are more favored. Here we make a compromise between user
+            # comfort and decentralization, tending towards user comfort.
 
             # number of channels
             heuristics.append(stats.number_channels / max_num_chan)
@@ -235,18 +244,27 @@ class LNRater(Logger):
         node_keys = list(self._node_stats.keys())
         node_ratings = list(self._node_ratings.values())
         channel_peers = self.lnworker.channel_peers()
+        node_info: Optional["NodeInfo"] = None
 
         while True:
             # randomly pick nodes weighted by node_rating
             pk = choices(node_keys, weights=node_ratings, k=1)[0]
+            # node should have compatible features
+            node_info = self.channel_db.get_node_infos().get(pk, None)
+            peer_features = LnFeatures(node_info.features)
+            try:
+                ln_compare_features(self.lnworker.features, peer_features)
+            except IncompatibleLightningFeatures as e:
+                self.logger.info("suggested node is incompatible")
+                continue
 
             # don't want to connect to nodes we are already connected to
             if pk not in channel_peers:
                 break
 
-        node_infos = self.channel_db.get_node_infos()
+        alias = node_info.alias if node_info else 'unknown node alias'
         self.logger.info(
-            f"node rating for {node_infos[pk].alias}:\n"
+            f"node rating for {alias}:\n"
             f"{pformat(self._node_stats[pk])} (score {self._node_ratings[pk]})")
 
         return pk, self._node_stats[pk]

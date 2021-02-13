@@ -8,6 +8,7 @@ from binascii import hexlify
 from decimal import Decimal
 from typing import Optional
 
+import random
 import bitstring
 
 from .bitcoin import hash160_to_b58_address, b58_address_to_hash160
@@ -217,7 +218,8 @@ def lnencode(addr: 'LnAddr', privkey) -> str:
         elif k == 'f':
             data += encode_fallback(v, addr.currency)
         elif k == 'd':
-            data += tagged_bytes('d', v.encode())
+            # truncate to max length: 1024*5 bits = 639 bytes
+            data += tagged_bytes('d', v.encode()[0:639])
         elif k == 'x':
             expirybits = bitstring.pack('intbe:64', v)
             expirybits = trim_to_min_length(expirybits)
@@ -273,13 +275,23 @@ class LnAddr(object):
         self.pubkey = None
         self.currency = constants.net.SEGWIT_HRP if currency is None else currency
         self.amount = amount  # type: Optional[Decimal]  # in bitcoins
-        self._min_final_cltv_expiry = 9
+        self._min_final_cltv_expiry = 18
 
     def get_amount_sat(self) -> Optional[Decimal]:
         # note that this has msat resolution potentially
         if self.amount is None:
             return None
         return self.amount * COIN
+
+    def get_routing_info(self, tag):
+        # note: tag will be 't' for trampoline
+        r_tags = list(filter(lambda x: x[0] == tag, self.tags))
+        # strip the tag type, it's implicitly 'r' now
+        r_tags = list(map(lambda x: x[1], r_tags))
+        # if there are multiple hints, we will use the first one that works,
+        # from a random permutation
+        random.shuffle(r_tags)
+        return r_tags
 
     def get_amount_msat(self) -> Optional[int]:
         if self.amount is None:
@@ -393,9 +405,9 @@ def lndecode(invoice: str, *, verbose=False, expected_hrp=None) -> LnAddr:
             while s.pos + 264 + 64 + 32 + 32 + 16 < s.len:
                 route.append((s.read(264).tobytes(),
                               s.read(64).tobytes(),
-                              s.read(32).intbe,
-                              s.read(32).intbe,
-                              s.read(16).intbe))
+                              s.read(32).uintbe,
+                              s.read(32).uintbe,
+                              s.read(16).uintbe))
             addr.tags.append(('r',route))
         elif tag == 'f':
             fallback = parse_fallback(tagdata, addr.currency)
@@ -438,7 +450,7 @@ def lndecode(invoice: str, *, verbose=False, expected_hrp=None) -> LnAddr:
             addr.pubkey = pubkeybytes
 
         elif tag == 'c':
-            addr._min_final_cltv_expiry = tagdata.int
+            addr._min_final_cltv_expiry = tagdata.uint
 
         elif tag == '9':
             features = tagdata.uint

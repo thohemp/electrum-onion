@@ -56,8 +56,8 @@ def fee_for_edge_msat(forwarded_amount_msat: int, fee_base_msat: int, fee_propor
 @attr.s(slots=True)
 class PathEdge:
     """if you travel through short_channel_id, you will reach node_id"""
-    node_id = attr.ib(type=bytes, kw_only=True)
-    short_channel_id = attr.ib(type=ShortChannelID, kw_only=True)
+    node_id = attr.ib(type=bytes, kw_only=True, repr=lambda val: val.hex())
+    short_channel_id = attr.ib(type=ShortChannelID, kw_only=True, repr=lambda val: str(val))
 
 
 @attr.s
@@ -65,7 +65,7 @@ class RouteEdge(PathEdge):
     fee_base_msat = attr.ib(type=int, kw_only=True)
     fee_proportional_millionths = attr.ib(type=int, kw_only=True)
     cltv_expiry_delta = attr.ib(type=int, kw_only=True)
-    node_features = attr.ib(type=int, kw_only=True)  # note: for end node!
+    node_features = attr.ib(type=int, kw_only=True, repr=lambda val: str(int(val)))  # note: for end node!
 
     def fee_for_edge(self, amount_msat: int) -> int:
         return fee_for_edge_msat(forwarded_amount_msat=amount_msat,
@@ -88,7 +88,7 @@ class RouteEdge(PathEdge):
     def is_sane_to_use(self, amount_msat: int) -> bool:
         # TODO revise ad-hoc heuristics
         # cltv cannot be more than 2 weeks
-        if self.cltv_expiry_delta > 14 * 144:
+        if self.cltv_expiry_delta > 14 * 576:
             return False
         total_fee = self.fee_for_edge(amount_msat)
         if not is_fee_sane(total_fee, payment_amount_msat=amount_msat):
@@ -135,24 +135,12 @@ def is_fee_sane(fee_msat: int, *, payment_amount_msat: int) -> bool:
     return False
 
 
-BLACKLIST_DURATION = 3600
 
 class LNPathFinder(Logger):
 
     def __init__(self, channel_db: ChannelDB):
         Logger.__init__(self)
         self.channel_db = channel_db
-        self.blacklist = dict() # short_chan_id -> timestamp
-
-    def add_to_blacklist(self, short_channel_id: ShortChannelID):
-        self.logger.info(f'blacklisting channel {short_channel_id}')
-        now = int(time.time())
-        self.blacklist[short_channel_id] = now
-
-    def is_blacklisted(self, short_channel_id: ShortChannelID) -> bool:
-        now = int(time.time())
-        t = self.blacklist.get(short_channel_id, 0)
-        return now - t < BLACKLIST_DURATION
 
     def _edge_cost(self, short_channel_id: bytes, start_node: bytes, end_node: bytes,
                    payment_amt_msat: int, ignore_costs=False, is_mine=False, *,
@@ -200,10 +188,9 @@ class LNPathFinder(Logger):
         overall_cost = base_cost + fee_msat + cltv_cost
         return overall_cost, fee_msat
 
-    def get_distances(self, nodeA: bytes, nodeB: bytes,
-                      invoice_amount_msat: int, *,
-                      my_channels: Dict[ShortChannelID, 'Channel'] = None
-                      ) -> Dict[bytes, PathEdge]:
+    def get_distances(self, nodeA: bytes, nodeB: bytes, invoice_amount_msat: int, *,
+                      my_channels: Dict[ShortChannelID, 'Channel'] = None,
+                      blacklist: Set[ShortChannelID] = None) -> Dict[bytes, PathEdge]:
         # note: we don't lock self.channel_db, so while the path finding runs,
         #       the underlying graph could potentially change... (not good but maybe ~OK?)
 
@@ -215,7 +202,6 @@ class LNPathFinder(Logger):
         prev_node = {}  # type: Dict[bytes, PathEdge]
         nodes_to_explore = queue.PriorityQueue()
         nodes_to_explore.put((0, invoice_amount_msat, nodeB))  # order of fields (in tuple) matters!
-
 
         # main loop of search
         while nodes_to_explore.qsize() > 0:
@@ -229,7 +215,7 @@ class LNPathFinder(Logger):
                 continue
             for edge_channel_id in self.channel_db.get_channels_for_node(edge_endnode, my_channels=my_channels):
                 assert isinstance(edge_channel_id, bytes)
-                if self.is_blacklisted(edge_channel_id):
+                if blacklist and edge_channel_id in blacklist:
                     continue
                 channel_info = self.channel_db.get_channel_info(edge_channel_id, my_channels=my_channels)
                 edge_startnode = channel_info.node2_id if channel_info.node1_id == edge_endnode else channel_info.node1_id
@@ -263,7 +249,8 @@ class LNPathFinder(Logger):
     @profiler
     def find_path_for_payment(self, nodeA: bytes, nodeB: bytes,
                               invoice_amount_msat: int, *,
-                              my_channels: Dict[ShortChannelID, 'Channel'] = None) \
+                              my_channels: Dict[ShortChannelID, 'Channel'] = None,
+                              blacklist: Set[ShortChannelID] = None) \
             -> Optional[LNPaymentPath]:
         """Return a path from nodeA to nodeB."""
         assert type(nodeA) is bytes
@@ -272,7 +259,7 @@ class LNPathFinder(Logger):
         if my_channels is None:
             my_channels = {}
 
-        prev_node = self.get_distances(nodeA, nodeB, invoice_amount_msat, my_channels=my_channels)
+        prev_node = self.get_distances(nodeA, nodeB, invoice_amount_msat, my_channels=my_channels, blacklist=blacklist)
 
         if nodeA not in prev_node:
             return None  # no path found
@@ -310,3 +297,11 @@ class LNPathFinder(Logger):
                                                        node_info=node_info))
             prev_node_id = node_id
         return route
+
+    def find_route(self, nodeA: bytes, nodeB: bytes, invoice_amount_msat: int, *,
+                   path = None, my_channels: Dict[ShortChannelID, 'Channel'] = None,
+                   blacklist: Set[ShortChannelID] = None) -> Optional[LNPaymentRoute]:
+        if not path:
+            path = self.find_path_for_payment(nodeA, nodeB, invoice_amount_msat, my_channels=my_channels, blacklist=blacklist)
+        if path:
+            return self.create_route_from_path(path, nodeA, my_channels=my_channels)

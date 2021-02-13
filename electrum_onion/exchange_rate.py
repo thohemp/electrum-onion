@@ -11,6 +11,7 @@ from decimal import Decimal
 from typing import Sequence, Optional
 
 from aiorpcx.curio import timeout_after, TaskTimeout, TaskGroup
+import aiohttp
 
 from . import util
 from .bitcoin import COIN
@@ -82,8 +83,11 @@ class ExchangeBase(Logger):
         except asyncio.CancelledError:
             # CancelledError must be passed-through for cancellation to work
             raise
-        except BaseException as e:
+        except aiohttp.ClientError as e:
             self.logger.info(f"failed fx quotes: {repr(e)}")
+            self.quotes = {}
+        except Exception as e:
+            self.logger.exception(f"failed fx quotes: {repr(e)}")
             self.quotes = {}
         self.on_quotes()
 
@@ -110,8 +114,11 @@ class ExchangeBase(Logger):
             self.logger.info(f"requesting fx history for {ccy}")
             h = await self.request_history(ccy)
             self.logger.info(f"received fx history for {ccy}")
-        except BaseException as e:
+        except aiohttp.ClientError as e:
             self.logger.info(f"failed fx history: {repr(e)}")
+            return
+        except Exception as e:
+            self.logger.exception(f"failed fx history: {repr(e)}")
             return
         filename = os.path.join(cache_dir, self.name() + '_' + ccy)
         with open(filename, 'w', encoding='utf-8') as f:
@@ -494,7 +501,7 @@ class FxThread(ThreadJob):
     def show_history(self):
         return self.is_enabled() and self.get_history_config() and self.ccy in self.exchange.history_ccys()
 
-    def set_currency(self, ccy):
+    def set_currency(self, ccy: str):
         self.ccy = ccy
         self.config.set_key('currency', ccy, True)
         self.trigger_update()
@@ -524,6 +531,8 @@ class FxThread(ThreadJob):
 
     def exchange_rate(self) -> Decimal:
         """Returns the exchange rate as a Decimal"""
+        if not self.is_enabled():
+            return Decimal('NaN')
         rate = self.exchange.quotes.get(self.ccy)
         if rate is None:
             return Decimal('NaN')
