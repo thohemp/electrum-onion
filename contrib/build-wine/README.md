@@ -39,7 +39,7 @@ folder.
         sudo rm -rf $FRESH_CLONE && \
         mkdir -p $FRESH_CLONE && \
         cd $FRESH_CLONE  && \
-        git clone https://github.com/pooler/electrum-onion.git && \
+        git clone https://github.com/thohemp/electrum-onion.git && \
         cd electrum-onion
     ```
 
