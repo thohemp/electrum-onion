@@ -555,8 +555,8 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger):
         if self.wallet.is_watching_only():
             msg = ' '.join([
                 _("This wallet is watching-only."),
-                _("This means you will not be able to spend deeponions with it."),
-                _("Make sure you own the seed phrase or the private keys, before you request deeponions to be sent to this wallet.")
+                _("This means you will not be able to spend DeepOnions with it."),
+                _("Make sure you own the seed phrase or the private keys, before you request DeepOnions to be sent to this wallet.")
             ])
             self.show_warning(msg, title=_('Watch-only wallet'))
 
@@ -573,7 +573,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger):
         msg = ''.join([
             _("You are in testnet mode."), ' ',
             _("Testnet coins are worthless."), '\n',
-            _("Testnet is separate from the main deeponion network. It is used for testing.")
+            _("Testnet is separate from the main DeepOnion network. It is used for testing.")
         ])
         cb = QCheckBox(_("Don't show this again."))
         cb_checked = False
@@ -776,18 +776,18 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger):
         d = self.network.get_donation_address()
         if d:
             host = self.network.get_parameters().server.host
-            self.pay_to_URI('deeponion:%s?message=donation for %s'%(d, host))
+            self.pay_to_URI('DeepOnion:%s?message=donation for %s'%(d, host))
         else:
             self.show_error(_('No donation address for this server'))
 
     def show_about(self):
         QMessageBox.about(self, "electrum-onion",
                           (_("Version")+" %s" % ELECTRUM_VERSION + "\n\n" +
-                           _("Electrum's focus is speed, with low resource usage and simplifying deeponion.") + " " +
+                           _("Electrum's focus is speed, with low resource usage and simplifying DeepOnion.") + " " +
                            _("You do not need to perform regular backups, because your wallet can be "
                               "recovered from a secret phrase that you can memorize or write on paper.") + " " +
                            _("Startup times are instant because it operates in conjunction with high-performance "
-                              "servers that handle the most complicated parts of the deeponion system.") + "\n\n" +
+                              "servers that handle the most complicated parts of the DeepOnion system.") + "\n\n" +
                            _("Uses icons from the Icons8 icon pack (icons8.com).")))
 
     def show_update_check(self, version=None):
@@ -1064,8 +1064,8 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger):
         msg = ' '.join([
             _('Expiration date of your request.'),
             _('This information is seen by the recipient if you send them a signed payment request.'),
-            _('Expired requests have to be deleted manually from your list, in order to free the corresponding deeponion addresses.'),
-            _('The deeponion address never expires and will always be part of this Electrum wallet.'),
+            _('Expired requests have to be deleted manually from your list, in order to free the corresponding DeepOnion addresses.'),
+            _('The DeepOnion address never expires and will always be part of this Electrum wallet.'),
         ])
         grid.addWidget(HelpLabel(_('Expires after'), msg), 2, 0)
         grid.addWidget(self.expires_combo, 2, 1)
@@ -1313,7 +1313,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger):
         self.payto_e = PayToEdit(self)
         self.payto_e.addPasteButton(self.app)
         msg = _('Recipient of the funds.') + '\n\n'\
-              + _('You may enter a deeponion address, a label from your list of contacts (a list of completions will be proposed), or an alias (email-like address that forwards to a deeponion address)')
+              + _('You may enter a DeepOnion address, a label from your list of contacts (a list of completions will be proposed), or an alias (email-like address that forwards to a DeepOnion address)')
         payto_label = HelpLabel(_('Pay to'), msg)
         grid.addWidget(payto_label, 1, 0)
         grid.addWidget(self.payto_e, 1, 1, 1, -1)
@@ -1457,7 +1457,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger):
 
         for o in outputs:
             if o.scriptpubkey is None:
-                self.show_error(_('deeponion Address is None'))
+                self.show_error(_('DeepOnion Address is None'))
                 return True
             if o.value is None:
                 self.show_error(_('Invalid Amount'))
@@ -2510,7 +2510,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger):
         address  = address.text().strip()
         message = message.toPlainText().strip()
         if not bitcoin.is_address(address):
-            self.show_message(_('Invalid deeponion address.'))
+            self.show_message(_('Invalid DeepOnion address.'))
             return
         if self.wallet.is_watching_only():
             self.show_message(_('This is a watching-only wallet.'))
@@ -2538,7 +2538,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger):
         address  = address.text().strip()
         message = message.toPlainText().strip().encode('utf-8')
         if not bitcoin.is_address(address):
-            self.show_message(_('Invalid deeponion address.'))
+            self.show_message(_('Invalid DeepOnion address.'))
             return
         try:
             # This can throw on invalid base64

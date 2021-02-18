@@ -742,7 +742,7 @@ def time_difference(distance_in_time, include_seconds):
         return "over %d years" % (round(distance_in_minutes / 525600))
 
 mainnet_block_explorers = {
-    'explorer.deeponion.org': ('https://explorer.deeponion.org/',
+    'explorer.DeepOnion.org': ('https://explorer.DeepOnion.org/',
                         {'tx': 'tx/', 'addr': 'address/'}),
 }
 
@@ -824,7 +824,7 @@ def parse_URI(uri: str, on_pr: Callable = None, *, loop=None) -> dict:
 
     if ':' not in uri:
         if not bitcoin.is_address(uri):
-            raise InvalidBitcoinURI("Not a deeponion address")
+            raise InvalidBitcoinURI("Not a DeepOnion address")
         return {'address': uri}
 
     u = urllib.parse.urlparse(uri)
@@ -846,7 +846,7 @@ def parse_URI(uri: str, on_pr: Callable = None, *, loop=None) -> dict:
     out = {k: v[0] for k, v in pq.items()}
     if address:
         if not bitcoin.is_address(address):
-            raise InvalidBitcoinURI(f"Invalid deeponion address: {address}")
+            raise InvalidBitcoinURI(f"Invalid DeepOnion address: {address}")
         out['address'] = address
     if 'amount' in out:
         am = out['amount']

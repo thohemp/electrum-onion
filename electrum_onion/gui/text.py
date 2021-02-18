@@ -351,7 +351,7 @@ class ElectrumGui:
 
     def do_send(self):
         if not is_address(self.str_recipient):
-            self.show_message(_('Invalid deeponion address'))
+            self.show_message(_('Invalid DeepOnion address'))
             return
         try:
             amount = int(Decimal(self.str_amount) * COIN)

@@ -12,7 +12,7 @@ from electrum_onion.simple_config import SimpleConfig
 try:
     addr = sys.argv[1]
 except Exception:
-    print("usage: watch_address <deeponion_address>")
+    print("usage: watch_address <DeepOnion_address>")
     sys.exit(1)
 
 config = SimpleConfig()

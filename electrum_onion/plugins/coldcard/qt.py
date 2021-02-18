@@ -5,15 +5,10 @@ import copy
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtWidgets import QPushButton, QLabel, QVBoxLayout, QWidget, QGridLayout
 
-<<<<<<< HEAD:electrum_onion/plugins/coldcard/qt.py
-from electrum_onion.gui.qt.util import WindowModalDialog, CloseButton, get_parent_main_window, Buttons
-from electrum_onion.gui.qt.transaction_dialog import TxDialog
-=======
 from electrum_onion.gui.qt.util import (WindowModalDialog, CloseButton, Buttons, getOpenFileName,
                                       getSaveFileName)
 from electrum_onion.gui.qt.transaction_dialog import TxDialog
 from electrum_onion.gui.qt.main_window import ElectrumWindow
->>>>>>> 7f462391a686c5ee8d23fb6f43fd5bc99b193841:electrum_onion/plugins/coldcard/qt.py
 
 from electrum_onion.i18n import _
 from electrum_onion.plugin import hook

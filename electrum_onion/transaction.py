@@ -550,7 +550,7 @@ class Transaction:
         self._outputs = None  # type: List[TxOutput]
         self._locktime = 0
         self._version = 2
-        self.ntime = int(time.time())
+        self.time = int(time.time())
 
         self._cached_txid = None  # type: Optional[str]
 
@@ -604,7 +604,7 @@ class Transaction:
         vds = BCDataStream()
         vds.write(raw_bytes)
         self._version = vds.read_int32()
-        self.ntime = vds.read_uint32()
+        self.time = vds.read_uint32()
         n_vin = vds.read_compact_size()
         is_segwit = (n_vin == 0)
         if is_segwit:
@@ -807,7 +807,7 @@ class Transaction:
         """
         self.deserialize()
         nVersion = int_to_hex(self.version, 4)
-        nTime = int_to_hex(self.ntime, 4)
+        nTime = int_to_hex(self.time, 4)
         nLocktime = int_to_hex(self.locktime, 4)
         inputs = self.inputs()
         outputs = self.outputs()

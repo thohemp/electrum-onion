@@ -33,12 +33,8 @@ if TYPE_CHECKING:
 
 Builder.load_string('''
 #:import Window kivy.core.window.Window
-<<<<<<< HEAD:electrum_onion/gui/kivy/uix/dialogs/installwizard.py
-#:import _ electrum_onion.gui.kivy.i18n._
-=======
 #:import _ electrum_onion.gui.kivy.i18n._
 #:import KIVY_GUI_PATH electrum_onion.gui.kivy.KIVY_GUI_PATH
->>>>>>> 7f462391a686c5ee8d23fb6f43fd5bc99b193841:electrum_onion/gui/kivy/uix/dialogs/installwizard.py
 
 
 <WizardTextInput@TextInput>
@@ -48,13 +44,8 @@ Builder.load_string('''
     background_color: (1, 1, 1, 1) if self.focus else (0.454, 0.698, 0.909, 1)
     foreground_color: (0.31, 0.31, 0.31, 1) if self.focus else (0.835, 0.909, 0.972, 1)
     hint_text_color: self.foreground_color
-<<<<<<< HEAD:electrum_onion/gui/kivy/uix/dialogs/installwizard.py
-    background_active: 'atlas://electrum_onion/gui/kivy/theming/light/create_act_text_active'
-    background_normal: 'atlas://electrum_onion/gui/kivy/theming/light/create_act_text_active'
-=======
     background_active: f'atlas://{KIVY_GUI_PATH}/theming/light/create_act_text_active'
     background_normal: f'atlas://{KIVY_GUI_PATH}/theming/light/create_act_text_active'
->>>>>>> 7f462391a686c5ee8d23fb6f43fd5bc99b193841:electrum_onion/gui/kivy/uix/dialogs/installwizard.py
     size_hint_y: None
     height: '48sp'
 
@@ -103,11 +94,7 @@ Builder.load_string('''
                 size_hint: 1, None
                 height: self.texture_size[1] if self.opacity else 0
                 font_size: '33sp'
-<<<<<<< HEAD:electrum_onion/gui/kivy/uix/dialogs/installwizard.py
-                font_name: 'electrum_onion/gui/kivy/data/fonts/tron/Tr2n.ttf'
-=======
                 font_name: f'{KIVY_GUI_PATH}/data/fonts/tron/Tr2n.ttf'
->>>>>>> 7f462391a686c5ee8d23fb6f43fd5bc99b193841:electrum_onion/gui/kivy/uix/dialogs/installwizard.py
         GridLayout:
             cols: 1
             id: crcontent
@@ -328,11 +315,7 @@ Builder.load_string('''
     font_size: '18dp'
     text_size: self.width - dp(24), self.height - dp(12)
     color: .1, .1, .1, 1
-<<<<<<< HEAD:electrum_onion/gui/kivy/uix/dialogs/installwizard.py
-    background_normal: 'atlas://electrum_onion/gui/kivy/theming/light/white_bg_round_top'
-=======
     background_normal: f'atlas://{KIVY_GUI_PATH}/theming/light/white_bg_round_top'
->>>>>>> 7f462391a686c5ee8d23fb6f43fd5bc99b193841:electrum_onion/gui/kivy/uix/dialogs/installwizard.py
     background_down: self.background_normal
     size_hint_y: None
 
@@ -361,11 +344,7 @@ Builder.load_string('''
         height: '30dp'
         width: '30dp'
         size_hint: 1, None
-<<<<<<< HEAD:electrum_onion/gui/kivy/uix/dialogs/installwizard.py
-        icon: 'atlas://electrum_onion/gui/kivy/theming/light/gear'
-=======
         icon: f'atlas://{KIVY_GUI_PATH}/theming/light/gear'
->>>>>>> 7f462391a686c5ee8d23fb6f43fd5bc99b193841:electrum_onion/gui/kivy/uix/dialogs/installwizard.py
         on_release:
             root.options_dialog() if root.options_dialog else None
 
@@ -501,11 +480,7 @@ Builder.load_string('''
             id: scan
             height: '48sp'
             on_release: root.scan_xpub()
-<<<<<<< HEAD:electrum_onion/gui/kivy/uix/dialogs/installwizard.py
-            icon: 'atlas://electrum_onion/gui/kivy/theming/light/camera'
-=======
             icon: f'atlas://{KIVY_GUI_PATH}/theming/light/camera'
->>>>>>> 7f462391a686c5ee8d23fb6f43fd5bc99b193841:electrum_onion/gui/kivy/uix/dialogs/installwizard.py
             size_hint: 1, None
         WizardButton:
             text: _('Paste')
@@ -1100,40 +1075,9 @@ class AddXpubDialog(WizardDialog):
 
 class InstallWizard(BaseWizard, Widget):
 
-<<<<<<< HEAD:electrum_onion/gui/kivy/uix/dialogs/installwizard.py
-    def waiting_dialog(self, task, msg, on_finished=None):
-        '''Perform a blocking task in the background by running the passed
-        method in a thread.
-        '''
-        def target():
-            # run your threaded function
-            try:
-                task()
-            except Exception as err:
-                self.logger.exception('')
-                self.show_error(str(err))
-            # on  completion hide message
-            Clock.schedule_once(lambda dt: app.info_bubble.hide(now=True), -1)
-            if on_finished:
-                def protected_on_finished():
-                    try:
-                        on_finished()
-                    except Exception as e:
-                        self.logger.exception('')
-                        self.show_error(str(e))
-                Clock.schedule_once(lambda dt: protected_on_finished(), -1)
-
-        app = App.get_running_app()
-        app.show_info_bubble(
-            text=msg, icon='atlas://electrum_onion/gui/kivy/theming/light/important',
-            pos=Window.center, width='200sp', arrow_pos=None, modal=True)
-        t = threading.Thread(target = target)
-        t.start()
-=======
     def __init__(self, *args, **kwargs):
         BaseWizard.__init__(self, *args, **kwargs)
         self.app = App.get_running_app()
->>>>>>> 7f462391a686c5ee8d23fb6f43fd5bc99b193841:electrum_onion/gui/kivy/uix/dialogs/installwizard.py
 
     def terminate(self, *, storage=None, db=None, aborted=False):
         # storage must be None because manual upgrades are disabled on Kivy

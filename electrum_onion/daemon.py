@@ -372,7 +372,7 @@ class PayServer(Logger):
         if not request:
             return web.HTTPNotFound()
         pr = make_request(self.config, request)
-        return web.Response(body=pr.SerializeToString(), content_type='application/deeponion-paymentrequest')
+        return web.Response(body=pr.SerializeToString(), content_type='application/DeepOnion-paymentrequest')
 
     async def get_status(self, request):
         ws = web.WebSocketResponse()

@@ -12,7 +12,7 @@ from electrum_onion.simple_config import SimpleConfig
 try:
     addr = sys.argv[1]
 except Exception:
-    print("usage: get_history <deeponion_address>")
+    print("usage: get_history <DeepOnion_address>")
     sys.exit(1)
 
 config = SimpleConfig()

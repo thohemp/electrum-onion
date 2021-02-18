@@ -29,10 +29,10 @@ PASSPHRASE_HELP = PASSPHRASE_HELP_SHORT + "  " + _(
     "accessible behind its own passphrase.")
 RECOMMEND_PIN = _(
     "You should enable PIN protection.  Your PIN is the only protection "
-    "for your deeponions if your device is lost or stolen.")
+    "for your DeepOnions if your device is lost or stolen.")
 PASSPHRASE_NOT_PIN = _(
     "If you forget a passphrase you will be unable to access any "
-    "deeponions in the wallet behind it.  A passphrase is not a PIN. "
+    "DeepOnions in the wallet behind it.  A passphrase is not a PIN. "
     "Only change this if you are sure you understand it.")
 CHARACTER_RECOVERY = (
     "Use the recovery cipher shown on your device to input your seed words.  "
@@ -410,7 +410,7 @@ class SettingsDialog(WindowModalDialog):
             if wallet and sum(wallet.get_balance()):
                 title = _("Confirm Device Wipe")
                 msg = _("Are you SURE you want to wipe the device?\n"
-                        "Your wallet still has deeponions in it!")
+                        "Your wallet still has DeepOnions in it!")
                 if not self.question(msg, title=title,
                                      icon=QMessageBox.Critical):
                     return
@@ -485,7 +485,7 @@ class SettingsDialog(WindowModalDialog):
         settings_glayout.addWidget(pin_button, 2, 1)
         pin_msg = QLabel(_("PIN protection is strongly recommended.  "
                            "A PIN is your only protection against someone "
-                           "stealing your deeponions if they obtain physical "
+                           "stealing your DeepOnions if they obtain physical "
                            "access to your {}.").format(plugin.device))
         pin_msg.setWordWrap(True)
         pin_msg.setStyleSheet("color: red")
@@ -527,7 +527,7 @@ class SettingsDialog(WindowModalDialog):
         clear_pin_button.clicked.connect(clear_pin)
         clear_pin_warning = QLabel(
             _("If you disable your PIN, anyone with physical access to your "
-              "{} device can spend your deeponions.").format(plugin.device))
+              "{} device can spend your DeepOnions.").format(plugin.device))
         clear_pin_warning.setWordWrap(True)
         clear_pin_warning.setStyleSheet("color: red")
         advanced_glayout.addWidget(clear_pin_button, 0, 2)
@@ -552,7 +552,7 @@ class SettingsDialog(WindowModalDialog):
         wipe_device_msg.setWordWrap(True)
         wipe_device_warning = QLabel(
             _("Only wipe a device if you have the recovery seed written down "
-              "and the device wallet(s) are empty, otherwise the deeponions "
+              "and the device wallet(s) are empty, otherwise the DeepOnions "
               "will be lost forever."))
         wipe_device_warning.setWordWrap(True)
         wipe_device_warning.setStyleSheet("color: red")

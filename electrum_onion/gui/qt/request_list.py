@@ -219,8 +219,8 @@ class RequestList(MyTreeView):
             menu.addAction(_("Copy Request"), lambda: self.parent.do_copy(req.invoice, title='Lightning Request'))
         else:
             URI = self.wallet.get_request_URI(req)
-            menu.addAction(_("Copy Request"), lambda: self.parent.do_copy(URI, title='deeponion URI'))
-            menu.addAction(_("Copy Address"), lambda: self.parent.do_copy(req.get_address(), title='deeponion Address'))
+            menu.addAction(_("Copy Request"), lambda: self.parent.do_copy(URI, title='DeepOnion URI'))
+            menu.addAction(_("Copy Address"), lambda: self.parent.do_copy(req.get_address(), title='DeepOnion Address'))
         #if 'view_url' in req:
         #    menu.addAction(_("View in web browser"), lambda: webopen(req['view_url']))
         menu.addAction(_("Delete"), lambda: self.parent.delete_requests([key]))

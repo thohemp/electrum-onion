@@ -17,7 +17,7 @@
     </head>
     <body>
       <div style="width:25em; margin:auto; font-family:arial, serif;">
-        <h2>deeponionn Payment</h2>
+        <h2>DeepOnion Payment</h2>
         <p id="status"></p>
         <p id="error"></p>
         <h3>Amount: <span id="amount"></span></h3>
@@ -138,7 +138,7 @@ if (id) {
 };
 
 // See http://stackoverflow.com/questions/29186154/chrome-clicking-mailto-links-closes-websocket-connection
-$(document).on('click', 'a[href^="deeponion:"]', function (e) {
+$(document).on('click', 'a[href^="DeepOnion:"]', function (e) {
     e.preventDefault();
     var btcWindow = window.open($(e.currentTarget).attr('href'));
     btcWindow.close();

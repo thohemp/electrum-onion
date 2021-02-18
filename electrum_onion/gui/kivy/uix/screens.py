@@ -26,18 +26,6 @@ from electrum_onion.util import profiler, parse_URI, format_time, InvalidPasswor
 from electrum_onion.invoices import (PR_TYPE_ONCHAIN, PR_TYPE_LN, PR_DEFAULT_EXPIRATION_WHEN_CREATING,
                                    PR_PAID, PR_UNKNOWN, PR_EXPIRED, PR_INFLIGHT,
                                    LNInvoice, pr_expiration_values, Invoice, OnchainInvoice)
-<<<<<<< HEAD:electrum_onion/gui/kivy/uix/screens.py
-from electrum_onion import bitcoin, constants
-from electrum_onion.transaction import Transaction, tx_from_any, PartialTransaction, PartialTxOutput
-from electrum_onion.util import parse_URI, InvalidBitcoinURI, TxMinedInfo, maybe_extract_bolt11_invoice
-from electrum_onion.plugin import run_hook
-from electrum_onion.wallet import InternalAddressCorruption
-from electrum_onion import simple_config
-from electrum_onion.simple_config import FEERATE_WARNING_HIGH_FEE, FEE_RATIO_HIGH_WARNING
-from electrum_onion.lnaddr import lndecode
-from electrum_onion.lnutil import RECEIVED, SENT, PaymentFailure
-from electrum_onion.logging import Logger
-=======
 from electrum_onion import bitcoin, constants
 from electrum_onion.transaction import Transaction, tx_from_any, PartialTransaction, PartialTxOutput
 from electrum_onion.util import parse_URI, InvalidBitcoinURI, TxMinedInfo, maybe_extract_bolt11_invoice
@@ -46,17 +34,12 @@ from electrum_onion import simple_config
 from electrum_onion.lnaddr import lndecode
 from electrum_onion.lnutil import RECEIVED, SENT, PaymentFailure
 from electrum_onion.logging import Logger
->>>>>>> 7f462391a686c5ee8d23fb6f43fd5bc99b193841:electrum_onion/gui/kivy/uix/screens.py
 
 from .dialogs.question import Question
 from .dialogs.lightning_open_channel import LightningOpenChannelDialog
 
-<<<<<<< HEAD:electrum_onion/gui/kivy/uix/screens.py
-from electrum_onion.gui.kivy.i18n import _
-=======
 from electrum_onion.gui.kivy import KIVY_GUI_PATH
 from electrum_onion.gui.kivy.i18n import _
->>>>>>> 7f462391a686c5ee8d23fb6f43fd5bc99b193841:electrum_onion/gui/kivy/uix/screens.py
 
 if TYPE_CHECKING:
     from electrum_onion.gui.kivy.main_window import ElectrumWindow
@@ -112,15 +95,9 @@ TX_ICONS = [
 ]
 
 
-<<<<<<< HEAD:electrum_onion/gui/kivy/uix/screens.py
-Builder.load_file('electrum_onion/gui/kivy/uix/ui_screens/history.kv')
-Builder.load_file('electrum_onion/gui/kivy/uix/ui_screens/send.kv')
-Builder.load_file('electrum_onion/gui/kivy/uix/ui_screens/receive.kv')
-=======
 Builder.load_file(KIVY_GUI_PATH + '/uix/ui_screens/history.kv')
 Builder.load_file(KIVY_GUI_PATH + '/uix/ui_screens/send.kv')
 Builder.load_file(KIVY_GUI_PATH + '/uix/ui_screens/receive.kv')
->>>>>>> 7f462391a686c5ee8d23fb6f43fd5bc99b193841:electrum_onion/gui/kivy/uix/screens.py
 
 
 class HistoryScreen(CScreen):
@@ -154,11 +131,7 @@ class HistoryScreen(CScreen):
         if is_lightning:
             status = 0
             status_str = 'unconfirmed' if timestamp is None else format_time(int(timestamp))
-<<<<<<< HEAD:electrum_onion/gui/kivy/uix/screens.py
-            icon = "atlas://electrum_onion/gui/kivy/theming/light/lightning"
-=======
             icon = f'atlas://{KIVY_GUI_PATH}/theming/light/lightning'
->>>>>>> 7f462391a686c5ee8d23fb6f43fd5bc99b193841:electrum_onion/gui/kivy/uix/screens.py
             message = tx_item['label']
             fee_msat = tx_item['fee_msat']
             fee = int(fee_msat/1000) if fee_msat else None
@@ -170,11 +143,7 @@ class HistoryScreen(CScreen):
                                         conf=tx_item['confirmations'],
                                         timestamp=tx_item['timestamp'])
             status, status_str = self.app.wallet.get_tx_status(tx_hash, tx_mined_info)
-<<<<<<< HEAD:electrum_onion/gui/kivy/uix/screens.py
-            icon = "atlas://electrum_onion/gui/kivy/theming/light/" + TX_ICONS[status]
-=======
             icon = f'atlas://{KIVY_GUI_PATH}/theming/light/' + TX_ICONS[status]
->>>>>>> 7f462391a686c5ee8d23fb6f43fd5bc99b193841:electrum_onion/gui/kivy/uix/screens.py
             message = tx_item['label'] or tx_hash
             fee = tx_item['fee_sat']
             fee_text = '' if fee is None else 'fee: %d sat'%fee
@@ -339,7 +308,7 @@ class SendScreen(CScreen, Logger):
     def read_invoice(self):
         address = str(self.address)
         if not address:
-            self.app.show_error(_('Recipient not specified.') + ' ' + _('Please scan a deeponion address or a payment request'))
+            self.app.show_error(_('Recipient not specified.') + ' ' + _('Please scan a DeepOnion address or a payment request'))
             return
         if not self.amount:
             self.app.show_error(_('Please enter an amount'))
@@ -360,7 +329,7 @@ class SendScreen(CScreen, Logger):
                 outputs = self.payment_request.get_outputs()
             else:
                 if not bitcoin.is_address(address):
-                    self.app.show_error(_('Invalid deeponion Address') + ':\n' + address)
+                    self.app.show_error(_('Invalid DeepOnion Address') + ':\n' + address)
                     return
                 outputs = [PartialTxOutput.from_address_and_value(address, amount)]
             return self.app.wallet.create_invoice(

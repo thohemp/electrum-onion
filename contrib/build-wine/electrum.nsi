@@ -133,10 +133,10 @@ Section
 
 
   ;Links bitcoin: URI's to Electrum
-  WriteRegStr HKCU "Software\Classes\deeponion" "" "URL:deeponion Protocol"
-  WriteRegStr HKCU "Software\Classes\deeponion" "URL Protocol" ""
-  WriteRegStr HKCU "Software\Classes\deeponion" "DefaultIcon" "$\"$INSTDIR\electrum.ico, 0$\""
-  WriteRegStr HKCU "Software\Classes\deeponion\shell\open\command" "" "$\"$INSTDIR\electrum-onion-${PRODUCT_VERSION}.exe$\" $\"%1$\""
+  WriteRegStr HKCU "Software\Classes\DeepOnion" "" "URL:DeepOnion Protocol"
+  WriteRegStr HKCU "Software\Classes\DeepOnion" "URL Protocol" ""
+  WriteRegStr HKCU "Software\Classes\DeepOnion" "DefaultIcon" "$\"$INSTDIR\electrum.ico, 0$\""
+  WriteRegStr HKCU "Software\Classes\DeepOnion\shell\open\command" "" "$\"$INSTDIR\electrum-onion-${PRODUCT_VERSION}.exe$\" $\"%1$\""
 
   ;Adds an uninstaller possibility to Windows Uninstall or change a program section
   WriteRegStr HKCU "${PRODUCT_UNINST_KEY}" "DisplayName" "$(^Name)"
@@ -167,7 +167,7 @@ Section "Uninstall"
   Delete "$SMPROGRAMS\${PRODUCT_NAME}\*.*"
   RMDir  "$SMPROGRAMS\${PRODUCT_NAME}"
   
-  DeleteRegKey HKCU "Software\Classes\deeponion"
+  DeleteRegKey HKCU "Software\Classes\DeepOnion"
   DeleteRegKey HKCU "Software\${PRODUCT_NAME}"
   DeleteRegKey HKCU "${PRODUCT_UNINST_KEY}"
 SectionEnd

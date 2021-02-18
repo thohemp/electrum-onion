@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 export HOME=~
 set -eux pipefail
-mkdir -p ~/.deeponion
-cat > ~/.Deeponion/DeepOnion.conf <<EOF
+mkdir -p ~/.DeepOnion
+cat > ~/.DeepOnion/DeepOnion.conf <<EOF
 regtest=1
 txindex=1
 printtoconsole=1
