@@ -195,9 +195,8 @@ async def sweep(
         locktime = get_locktime_for_new_transaction(network)
 
     tx = PartialTransaction.from_io(inputs, outputs, locktime=locktime, version=tx_version)
-    rbf = config.get('use_rbf', True)
-    if rbf:
-        tx.set_rbf(True)
+    rbf = bool(config.get('use_rbf', True))
+    tx.set_rbf(rbf)
     tx.sign(keypairs)
     return tx
 
@@ -1304,6 +1303,7 @@ class Abstract_Wallet(AddressSynchronizer, ABC):
         tx.ntime = int(time.time())
         tx.locktime = get_locktime_for_new_transaction(self.network)
 
+        tx.set_rbf(False)  # caller can set RBF manually later
         tx.add_info_from_wallet(self)
         run_hook('make_unsigned_transaction', self, tx)
         return tx
@@ -1441,6 +1441,7 @@ class Abstract_Wallet(AddressSynchronizer, ABC):
         if not isinstance(tx, PartialTransaction):
             tx = PartialTransaction.from_tx(tx)
         assert isinstance(tx, PartialTransaction)
+        tx.remove_signatures()
         if tx.is_final():
             raise CannotBumpFee(_('Transaction is final'))
         new_fee_rate = quantize_feerate(new_fee_rate)  # strip excess precision
@@ -1481,6 +1482,7 @@ class Abstract_Wallet(AddressSynchronizer, ABC):
                 f"got {actual_fee}, expected >={target_min_fee}. "
                 f"target rate was {new_fee_rate}")
         tx_new.locktime = get_locktime_for_new_transaction(self.network)
+        tx_new.set_rbf(True)
         tx_new.add_info_from_wallet(self)
         return tx_new
 
@@ -1548,7 +1550,7 @@ class Abstract_Wallet(AddressSynchronizer, ABC):
         tx.add_info_from_wallet(self)
         assert tx.get_fee() is not None
         inputs = tx.inputs()
-        outputs = list(tx.outputs())
+        outputs = tx._outputs  # note: we will mutate this directly
 
         # use own outputs
         s = list(filter(lambda o: self.is_mine(o.address), outputs))
@@ -1558,14 +1560,14 @@ class Abstract_Wallet(AddressSynchronizer, ABC):
             x_fee = run_hook('get_tx_extra_fee', self, tx)
             if x_fee:
                 x_fee_address, x_fee_amount = x_fee
-                s = filter(lambda o: o.address != x_fee_address, s)
+                s = list(filter(lambda o: o.address != x_fee_address, s))
         if not s:
             raise CannotBumpFee('No outputs at all??')
 
         # prioritize low value outputs, to get rid of dust
         s = sorted(s, key=lambda o: o.value)
         for o in s:
-            target_fee = int(round(tx.estimated_size() * new_fee_rate))
+            target_fee = int(math.ceil(tx.estimated_size() * new_fee_rate))
             delta = target_fee - tx.get_fee()
             i = outputs.index(o)
             if o.value - delta >= self.dust_threshold():
@@ -1576,9 +1578,8 @@ class Abstract_Wallet(AddressSynchronizer, ABC):
                 break
             else:
                 del outputs[i]
-                delta -= o.value
-                # note: delta might be negative now, in which case
-                # the value of the next output will be increased
+                # note: we mutated the outputs of tx, which will affect
+                #       tx.estimated_size() in the next iteration
         if delta > 0:
             raise CannotBumpFee(_('Could not find suitable outputs'))
 
@@ -1606,6 +1607,7 @@ class Abstract_Wallet(AddressSynchronizer, ABC):
         outputs = [PartialTxOutput.from_address_and_value(out_address, output_value)]
         locktime = get_locktime_for_new_transaction(self.network)
         tx_new = PartialTransaction.from_io(inputs, outputs, locktime=locktime)
+        tx_new.set_rbf(True)
         tx_new.add_info_from_wallet(self)
         return tx_new
 
@@ -1619,6 +1621,7 @@ class Abstract_Wallet(AddressSynchronizer, ABC):
         if not isinstance(tx, PartialTransaction):
             tx = PartialTransaction.from_tx(tx)
         assert isinstance(tx, PartialTransaction)
+        tx.remove_signatures()
 
         if tx.is_final():
             raise CannotDoubleSpendTx(_('Transaction is final'))
@@ -1656,6 +1659,7 @@ class Abstract_Wallet(AddressSynchronizer, ABC):
             raise CannotDoubleSpendTx(_("The output value remaining after fee is too low."))
         outputs = [PartialTxOutput.from_address_and_value(out_address, value - new_fee)]
         tx_new = PartialTransaction.from_io(inputs, outputs, locktime=locktime)
+        tx_new.set_rbf(True)
         tx_new.add_info_from_wallet(self)
         return tx_new
 
@@ -2301,9 +2305,8 @@ class Abstract_Wallet(AddressSynchronizer, ABC):
         if locktime is not None:
             tx.locktime = locktime
         if rbf is None:
-            rbf = self.config.get('use_rbf', True)
-        if rbf:
-            tx.set_rbf(True)
+            rbf = bool(self.config.get('use_rbf', True))
+        tx.set_rbf(rbf)
         if not unsigned:
             self.sign_transaction(tx, password)
         return tx
