@@ -206,7 +206,7 @@ class TrezorPlugin(HW_PluginBase):
         return client
 
     def get_coin_name(self):
-        return "Testnet" if constants.net.TESTNET else "deeponion"
+        return "Testnet" if constants.net.TESTNET else "DeepOnion"
 
     def initialize_device(self, device_id, wizard, handler):
         # Initialization method
@@ -345,7 +345,7 @@ class TrezorPlugin(HW_PluginBase):
         client = self.get_client(keystore)
         inputs = self.tx_inputs(tx, for_sig=True, keystore=keystore)
         outputs = self.tx_outputs(tx, keystore=keystore)
-        details = SignTx(lock_time=tx.locktime, version=tx.version)
+        details = SignTx(lock_time=tx.locktime, version=tx.version, timestamp=tx.time)
         signatures, _ = client.sign_tx(self.get_coin_name(), inputs, outputs, details=details, prev_txes=prev_tx)
         signatures = [(bh2u(x) + '01') for x in signatures]
         tx.update_signatures(signatures)
@@ -488,6 +488,7 @@ class TrezorPlugin(HW_PluginBase):
             return t
         tx.deserialize()
         t.version = tx.version
+        t.timestamp = tx.time
         t.lock_time = tx.locktime
         t.inputs = self.tx_inputs(tx)
         t.bin_outputs = [

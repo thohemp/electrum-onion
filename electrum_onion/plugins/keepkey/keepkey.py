@@ -71,7 +71,7 @@ class KeepKeyPlugin(HW_PluginBase):
     libraries_URL = 'https://github.com/keepkey/python-keepkey'
     minimum_firmware = (1, 0, 0)
     keystore_class = KeepKey_KeyStore
-    SUPPORTED_XTYPES = ('standard', 'p2wpkh-p2sh', 'p2wpkh', 'p2wsh-p2sh', 'p2wsh')
+    SUPPORTED_XTYPES = ('standard')#, 'p2wpkh-p2sh', 'p2wpkh', 'p2wsh-p2sh', 'p2wsh')
 
     MAX_LABEL_LEN = 32
 
@@ -199,7 +199,7 @@ class KeepKeyPlugin(HW_PluginBase):
         return client
 
     def get_coin_name(self):
-        return "Testnet" if constants.net.TESTNET else "deeponion"
+        return "Testnet" if constants.net.TESTNET else "DeepOnion"
 
     def initialize_device(self, device_id, wizard, handler):
         # Initialization method
@@ -476,7 +476,7 @@ class KeepKeyPlugin(HW_PluginBase):
             return t
         tx.deserialize()
         t.version = tx.version
-        t.lock_time = tx.locktime
+        t.timestamp = tx.ntime
         inputs = self.tx_inputs(tx)
         t.inputs.extend(inputs)
         for out in tx.outputs():
