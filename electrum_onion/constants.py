@@ -42,7 +42,7 @@ def read_json(filename, default):
 
 GIT_REPO_URL = "https://github.com/thohemp/electrum-onion"
 GIT_REPO_ISSUES_URL = "https://github.com/thohemp/electrum-onion/issues"
-_FORMBIP39_WALLETATS = read_json('bip39_wallet_formats.json', [])
+BIP39_WALLET_FORMATS = read_json('bip39_wallet_formats.json', [])
 
 
 class AbstractNet:
@@ -69,7 +69,7 @@ class BitcoinMainnet(AbstractNet):
     DEFAULT_PORTS = {'t': '50001', 's': '50002'}
     DEFAULT_SERVERS = read_json('servers.json', {})
     CHECKPOINTS = read_json('checkpoints.json', [])
-    BLOCK_HEIGHT_FIRST_LIGHTNING_CHANNELS = 497000
+    #BLOCK_HEIGHT_FIRST_LIGHTNING_CHANNELS = 497000
 
     XPRV_HEADERS = {
         'standard':    0x0488ade4,  # xprv
@@ -87,7 +87,7 @@ class BitcoinMainnet(AbstractNet):
         'p2wsh':       0x02aa7ed3,  # Zpub
     }
     XPUB_HEADERS_INV = inv_dict(XPUB_HEADERS)
-    BIP44_COIN_TYPE = 2
+    BIP44_COIN_TYPE = 305
 
 
 class BitcoinTestnet(AbstractNet):
