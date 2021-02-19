@@ -40,9 +40,9 @@ def read_json(filename, default):
     return r
 
 
-GIT_REPO_URL = "https://github.com/pooler/electrum-onion"
-GIT_REPO_ISSUES_URL = "https://github.com/pooler/electrum-onion/issues"
-BIP39_WALLET_FORMATS = read_json('bip39_wallet_formats.json', [])
+GIT_REPO_URL = "https://github.com/thohemp/electrum-onion"
+GIT_REPO_ISSUES_URL = "https://github.com/thohemp/electrum-onion/issues"
+_FORMBIP39_WALLETATS = read_json('bip39_wallet_formats.json', [])
 
 
 class AbstractNet:
