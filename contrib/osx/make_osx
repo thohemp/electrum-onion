@@ -104,7 +104,7 @@ info "generating locale"
         brew install gettext
         brew link --force gettext
     fi
-    cd "$CONTRIB"/deterministic-build/electrum-onion-locale
+    cd "$CONTRIB"/deterministic-build/electrum-locale
     for i in ./locale/*; do
         dir="$ROOT_FOLDER"/electrum_onion/$i/LC_MESSAGES
         mkdir -p $dir
