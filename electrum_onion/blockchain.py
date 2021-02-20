@@ -34,18 +34,6 @@ from .simple_config import SimpleConfig
 from .logging import get_logger, Logger
 import x13_hash
 
-#try:
-#    import scrypt
-#    getPoWHash = lambda x: scrypt.hash(x, x, N=1024, r=1, p=1, buflen=32)
-#except ImportError:
-#    util.print_msg("Warning: package scrypt not available; synchronization could be very slow")
-#    from .scrypt import scrypt_1024_1_1_80 as getPoWHash
-
-#ry:
-  #  getPoWHash = x13_hash.getPoWHash(header)
-
-
-
 _logger = get_logger(__name__)
 
 HEADER_SIZE = 80  # bytes
@@ -92,13 +80,7 @@ def hash_header(header: dict) -> str:
 
 
 def hash_raw_header(header: str) -> str:
-    return hash_encode(sha256d(bfh(header)))
-
-
-def pow_hash_header(header):
-    pass
-    #return hash_encode(hash_x13(bfh(serialize_header(header))))
-
+    return hash_encode(x13_hash.getPoWHash(bfh(header)))
 
 # key: blockhash hex at forkpoint
 # the chain at some key is the best chain that includes the given hash
