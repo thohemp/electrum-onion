@@ -87,7 +87,7 @@ Development version (git clone)
 
 Check out the code from GitHub::
 
-    git clone git://github.com/pooler/electrum-onion.git
+    git clone git://github.com/thohemp/electrum-onion.git
     cd electrum-onion
     git submodule update --init
 
