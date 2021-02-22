@@ -33,7 +33,7 @@ is a TL;DR::
 Installing x13 hashing::
 
     git clone https://github.com/thohemp/x13-hash
-    cd x13_hash
+    cd x13-hash
     sudo python3 setup.py install
 
 
