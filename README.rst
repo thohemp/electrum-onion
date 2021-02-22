@@ -30,6 +30,12 @@ is a TL;DR::
     sudo apt-get install libsecp256k1-0
     python3 -m pip install --user .[gui,crypto]
 
+Installing x13 hashing
+
+    git clone https://github.com/thohemp/x13-hash
+    cd x13_hash
+    sudo python3 setup.py install
+
 
 Not pure-python dependencies
 ----------------------------
