@@ -800,7 +800,7 @@ class ElectrumWindow(App, Logger):
         self.history_screen = None
         self.send_screen = None
         self.receive_screen = None
-        self.icon = os.path.dirname(KIVY_GUI_PATH) + "/icons/electrum-ltc.png"
+        self.icon = os.path.dirname(KIVY_GUI_PATH) + "/icons/electrum-onion.png"
         self.tabs = self.root.ids['tabs']
 
     def update_interfaces(self, dt):
