@@ -30,10 +30,14 @@ is a TL;DR::
     sudo apt-get install libsecp256k1-0
     python3 -m pip install --user .[gui,crypto]
 
-Installing x13 hashing::
+Install x13 hashing module::
 
-    git clone https://github.com/thohemp/x13-hash
-    cd x13-hash
+    pip install deeponion-x13-hash==1.0.2
+
+or
+
+    git clone https://github.com/thohemp/deeponion-x13-hash
+    cd deeponion-x13-hash
     sudo python3 setup.py install
 
 
