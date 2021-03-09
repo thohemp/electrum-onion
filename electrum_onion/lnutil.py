@@ -251,7 +251,7 @@ class Outpoint(StoredObject):
 
 class HtlcLog(NamedTuple):
     success: bool
-    amount_msat: int
+    amount_msat: int  # amount for receiver (e.g. from invoice)
     route: Optional['LNPaymentRoute'] = None
     preimage: Optional[bytes] = None
     error_bytes: Optional[bytes] = None
@@ -290,6 +290,9 @@ class UpfrontShutdownScriptViolation(RemoteMisbehaving): pass
 class NotFoundChanAnnouncementForUpdate(Exception): pass
 
 class PaymentFailure(UserFacingException): pass
+class NoPathFound(PaymentFailure):
+    def __str__(self):
+        return _('No path found')
 
 # TODO make some of these values configurable?
 REDEEM_AFTER_DOUBLE_SPENT_DELAY = 30
@@ -315,11 +318,6 @@ NBLOCK_DEADLINE_AFTER_EXPIRY_FOR_OFFERED_HTLCS = 1
 # the deadline for received HTLCs this node has fulfilled:
 # the deadline after which the channel has to be failed and the HTLC fulfilled on-chain before its cltv_expiry
 NBLOCK_DEADLINE_BEFORE_EXPIRY_FOR_RECEIVED_HTLCS = 288
-
-# the cltv_expiry_delta for channels when we are forwarding payments
-NBLOCK_OUR_CLTV_EXPIRY_DELTA = 576
-OUR_FEE_BASE_MSAT = 1000
-OUR_FEE_PROPORTIONAL_MILLIONTHS = 1
 
 NBLOCK_CLTV_EXPIRY_TOO_FAR_INTO_FUTURE = 28 * 576
 
@@ -946,8 +944,17 @@ class LnFeatures(IntFlag):
 
     OPTION_SUPPORT_LARGE_CHANNEL_REQ = 1 << 18
     OPTION_SUPPORT_LARGE_CHANNEL_OPT = 1 << 19
-    _ln_feature_contexts[OPTION_SUPPORT_LARGE_CHANNEL_OPT] = (LNFC.INIT | LNFC.NODE_ANN | LNFC.CHAN_ANN_ALWAYS_EVEN)
-    _ln_feature_contexts[OPTION_SUPPORT_LARGE_CHANNEL_REQ] = (LNFC.INIT | LNFC.NODE_ANN | LNFC.CHAN_ANN_ALWAYS_EVEN)
+    _ln_feature_contexts[OPTION_SUPPORT_LARGE_CHANNEL_OPT] = (LNFC.INIT | LNFC.NODE_ANN)
+    _ln_feature_contexts[OPTION_SUPPORT_LARGE_CHANNEL_REQ] = (LNFC.INIT | LNFC.NODE_ANN)
+
+    OPTION_TRAMPOLINE_ROUTING_REQ = 1 << 50
+    OPTION_TRAMPOLINE_ROUTING_OPT = 1 << 51
+
+    # We do not set trampoline_routing_opt in invoices, because the spec is not ready.
+    # This ensures that current version of Phoenix can pay us
+    # It also prevents Electrum from using t_tags from future implementations
+    _ln_feature_contexts[OPTION_TRAMPOLINE_ROUTING_REQ] = (LNFC.INIT | LNFC.NODE_ANN) # | LNFC.INVOICE)
+    _ln_feature_contexts[OPTION_TRAMPOLINE_ROUTING_OPT] = (LNFC.INIT | LNFC.NODE_ANN) # | LNFC.INVOICE)
 
     def validate_transitive_dependencies(self) -> bool:
         # for all even bit set, set corresponding odd bit:
@@ -1001,6 +1008,23 @@ class LnFeatures(IntFlag):
                 features |= (1 << flag)
         return features
 
+    def supports(self, feature: 'LnFeatures') -> bool:
+        """Returns whether given feature is enabled.
+
+        Helper function that tries to hide the complexity of even/odd bits.
+        For example, instead of:
+          bool(myfeatures & LnFeatures.VAR_ONION_OPT or myfeatures & LnFeatures.VAR_ONION_REQ)
+        you can do:
+          myfeatures.supports(LnFeatures.VAR_ONION_OPT)
+        """
+        enabled_bits = list_enabled_bits(feature)
+        if len(enabled_bits) != 1:
+            raise ValueError(f"'feature' cannot be a combination of features: {feature}")
+        flag = enabled_bits[0]
+        our_flags = set(list_enabled_bits(self))
+        return (flag in our_flags
+                or get_ln_flag_pair_of_bit(flag) in our_flags)
+
 
 del LNFC  # name is ambiguous without context
 
@@ -1014,6 +1038,8 @@ LN_FEATURES_IMPLEMENTED = (
         | LnFeatures.OPTION_STATIC_REMOTEKEY_OPT | LnFeatures.OPTION_STATIC_REMOTEKEY_REQ
         | LnFeatures.VAR_ONION_OPT | LnFeatures.VAR_ONION_REQ
         | LnFeatures.PAYMENT_SECRET_OPT | LnFeatures.PAYMENT_SECRET_REQ
+        | LnFeatures.BASIC_MPP_OPT | LnFeatures.BASIC_MPP_REQ
+        | LnFeatures.OPTION_TRAMPOLINE_ROUTING_OPT | LnFeatures.OPTION_TRAMPOLINE_ROUTING_REQ
 )
 
 
@@ -1240,6 +1266,18 @@ class ShortChannelID(bytes):
         return ShortChannelID(bh + tpos + oi)
 
     @classmethod
+    def from_str(cls, scid: str) -> 'ShortChannelID':
+        """Parses a formatted scid str, e.g. '643920x356x0'."""
+        components = scid.split("x")
+        if len(components) != 3:
+            raise ValueError(f"failed to parse ShortChannelID: {scid!r}")
+        try:
+            components = [int(x) for x in components]
+        except ValueError:
+            raise ValueError(f"failed to parse ShortChannelID: {scid!r}") from None
+        return ShortChannelID.from_components(*components)
+
+    @classmethod
     def normalize(cls, data: Union[None, str, bytes, 'ShortChannelID']) -> Optional['ShortChannelID']:
         if isinstance(data, ShortChannelID) or data is None:
             return data
@@ -1274,7 +1312,7 @@ def format_short_channel_id(short_channel_id: Optional[bytes]):
 @attr.s(frozen=True)
 class UpdateAddHtlc:
     amount_msat = attr.ib(type=int, kw_only=True)
-    payment_hash = attr.ib(type=bytes, kw_only=True, converter=hex_to_bytes)
+    payment_hash = attr.ib(type=bytes, kw_only=True, converter=hex_to_bytes, repr=lambda val: val.hex())
     cltv_expiry = attr.ib(type=int, kw_only=True)
     timestamp = attr.ib(type=int, kw_only=True)
     htlc_id = attr.ib(type=int, kw_only=True, default=None)

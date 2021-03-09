@@ -896,15 +896,27 @@ class Transaction:
         return 4 * input_size + witness_size
 
     @classmethod
-    def estimated_output_size(cls, address):
+    def estimated_output_size_for_address(cls, address: str) -> int:
         """Return an estimate of serialized output size in bytes."""
         script = bitcoin.address_to_script(address)
-        # 8 byte value + 1 byte script len + script
-        return 9 + len(script) // 2
+        return cls.estimated_output_size_for_script(script)
+
+    @classmethod
+    def estimated_output_size_for_script(cls, script: str) -> int:
+        """Return an estimate of serialized output size in bytes."""
+        # 8 byte value + varint script len + script
+        script_len = len(script) // 2
+        var_int_len = len(var_int(script_len)) // 2
+        return 8 + var_int_len + script_len
 
     @classmethod
     def virtual_size_from_weight(cls, weight):
         return weight // 4 + (weight % 4 > 0)
+
+    @classmethod
+    def satperbyte_from_satperkw(cls, feerate_kw):
+        """Converts feerate from sat/kw to sat/vbyte."""
+        return feerate_kw * 4 / 1000
 
     def estimated_total_size(self):
         """Return an estimated total transaction size in bytes."""
@@ -1160,8 +1172,16 @@ class PartialTxInput(TxInput, PSBTSection):
         return self._utxo
 
     @utxo.setter
-    def utxo(self, value: Optional[Transaction]):
-        self._utxo = value
+    def utxo(self, tx: Optional[Transaction]):
+        if tx is None:
+            return
+        # note that tx might be a PartialTransaction
+        # serialize and de-serialize tx now. this might e.g. convert a complete PartialTx to a Tx
+        tx = tx_from_any(str(tx))
+        # 'utxo' field in PSBT cannot be another PSBT:
+        if not tx.is_complete():
+            return
+        self._utxo = tx
         self.validate_data()
         self.ensure_there_is_only_one_utxo()
 

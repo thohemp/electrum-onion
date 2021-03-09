@@ -3,6 +3,7 @@ from PyQt5.QtWidgets import QFileDialog
 from electrum_onion.i18n import _
 from electrum_onion.plugin import run_hook
 from electrum_onion.simple_config import SimpleConfig
+from electrum_onion.util import UserFacingException
 
 from .util import ButtonsTextEdit, MessageBoxMixin, ColorScheme, getOpenFileName
 
@@ -70,12 +71,19 @@ class ScanQRTextEdit(ButtonsTextEdit, MessageBoxMixin):
             self.setText(data)
 
     def qr_input(self):
+<<<<<<< HEAD:electrum_onion/gui/qt/qrtextedit.py
         from electrum_onion import qrscanner
+=======
+        from electrum_onion import qrscanner
+        data = ''
+>>>>>>> 491654f631457cc4bd7b4c016a588bd026fb07fe:electrum_onion/gui/qt/qrtextedit.py
         try:
             data = qrscanner.scan_barcode(self.config.get_video_device())
+        except UserFacingException as e:
+            self.show_error(e)
         except BaseException as e:
+            self.logger.exception('camera error')
             self.show_error(repr(e))
-            data = ''
         if not data:
             data = ''
         if self.allow_multi:
