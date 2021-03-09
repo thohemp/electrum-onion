@@ -12,12 +12,9 @@ from kivy.uix.label import Label
 from kivy.uix.dropdown import DropDown
 from kivy.uix.button import Button
 
-<<<<<<< HEAD:electrum_onion/gui/kivy/uix/dialogs/lightning_tx_dialog.py
-from electrum_onion.gui.kivy.i18n import _
-=======
+
 from electrum_onion.gui.kivy.i18n import _
 from electrum_onion.invoices import LNInvoice
->>>>>>> 491654f631457cc4bd7b4c016a588bd026fb07fe:electrum_onion/gui/kivy/uix/dialogs/lightning_tx_dialog.py
 
 
 if TYPE_CHECKING:

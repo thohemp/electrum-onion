@@ -71,12 +71,9 @@ class ScanQRTextEdit(ButtonsTextEdit, MessageBoxMixin):
             self.setText(data)
 
     def qr_input(self):
-<<<<<<< HEAD:electrum_onion/gui/qt/qrtextedit.py
-        from electrum_onion import qrscanner
-=======
+
         from electrum_onion import qrscanner
         data = ''
->>>>>>> 491654f631457cc4bd7b4c016a588bd026fb07fe:electrum_onion/gui/qt/qrtextedit.py
         try:
             data = qrscanner.scan_barcode(self.config.get_video_device())
         except UserFacingException as e:
