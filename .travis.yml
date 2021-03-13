@@ -134,3 +134,4 @@ jobs:
         - ./contrib/deterministic-build/check_submodules.sh
       after_success: true
       if: tag IS present
+      
