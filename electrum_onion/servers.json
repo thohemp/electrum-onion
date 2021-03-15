@@ -4,6 +4,11 @@
         "s": "50002",
         "t": "50003",
         "version": "1.2"
+    },
+    "thn7ryhndmjokqyq.onion": {
+        "pruning": "-",
+        "s": "50002",
+        "t": "50003",
+        "version": "1.2"
     }
-    
 }
