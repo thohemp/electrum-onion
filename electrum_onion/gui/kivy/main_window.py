@@ -190,7 +190,8 @@ class ElectrumWindow(App, Logger):
         if self.use_gossip:
             self.network.start_gossip()
         else:
-            self.network.stop_gossip()
+            self.network.run_from_another_thread(
+                self.network.stop_gossip())
 
     android_backups = BooleanProperty(False)
     def on_android_backups(self, instance, x):
@@ -1345,7 +1346,7 @@ class ElectrumWindow(App, Logger):
         if not b:
             return
         try:
-            self.wallet.lnbackups.import_channel_backup(encrypted)
+            self.wallet.lnworker.import_channel_backup(encrypted)
         except Exception as e:
             self.logger.exception("failed to import backup")
             self.show_error("failed to import backup" + '\n' + str(e))

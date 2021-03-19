@@ -13,7 +13,7 @@ def sql(func):
     """wrapper for sql methods"""
     def wrapper(self: 'SqlDB', *args, **kwargs):
         assert threading.currentThread() != self.sql_thread
-        f = asyncio.Future()
+        f = self.asyncio_loop.create_future()
         self.db_requests.put((f, func, args, kwargs))
         return f
     return wrapper
@@ -25,6 +25,7 @@ class SqlDB(Logger):
         Logger.__init__(self)
         self.asyncio_loop = asyncio_loop
         self.stopping = False
+        self.stopped_event = asyncio.Event()
         self.path = path
         test_read_write_permissions(path)
         self.commit_interval = commit_interval
@@ -65,7 +66,9 @@ class SqlDB(Logger):
         # write
         self.conn.commit()
         self.conn.close()
+
         self.logger.info("SQL thread terminated")
+        self.asyncio_loop.call_soon_threadsafe(self.stopped_event.set)
 
     def create_database(self):
         raise NotImplementedError()

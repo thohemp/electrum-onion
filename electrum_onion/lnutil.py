@@ -288,6 +288,8 @@ class RemoteMisbehaving(LightningError): pass
 class UpfrontShutdownScriptViolation(RemoteMisbehaving): pass
 
 class NotFoundChanAnnouncementForUpdate(Exception): pass
+class InvalidGossipMsg(Exception):
+    """e.g. signature check failed"""
 
 class PaymentFailure(UserFacingException): pass
 class NoPathFound(PaymentFailure):
@@ -947,14 +949,15 @@ class LnFeatures(IntFlag):
     _ln_feature_contexts[OPTION_SUPPORT_LARGE_CHANNEL_OPT] = (LNFC.INIT | LNFC.NODE_ANN)
     _ln_feature_contexts[OPTION_SUPPORT_LARGE_CHANNEL_REQ] = (LNFC.INIT | LNFC.NODE_ANN)
 
-    OPTION_TRAMPOLINE_ROUTING_REQ = 1 << 50
-    OPTION_TRAMPOLINE_ROUTING_OPT = 1 << 51
+    OPTION_TRAMPOLINE_ROUTING_REQ = 1 << 24
+    OPTION_TRAMPOLINE_ROUTING_OPT = 1 << 25
 
-    # We do not set trampoline_routing_opt in invoices, because the spec is not ready.
-    # This ensures that current version of Phoenix can pay us
-    # It also prevents Electrum from using t_tags from future implementations
-    _ln_feature_contexts[OPTION_TRAMPOLINE_ROUTING_REQ] = (LNFC.INIT | LNFC.NODE_ANN) # | LNFC.INVOICE)
-    _ln_feature_contexts[OPTION_TRAMPOLINE_ROUTING_OPT] = (LNFC.INIT | LNFC.NODE_ANN) # | LNFC.INVOICE)
+    _ln_feature_contexts[OPTION_TRAMPOLINE_ROUTING_REQ] = (LNFC.INIT | LNFC.NODE_ANN | LNFC.INVOICE)
+    _ln_feature_contexts[OPTION_TRAMPOLINE_ROUTING_OPT] = (LNFC.INIT | LNFC.NODE_ANN | LNFC.INVOICE)
+
+    # temporary
+    OPTION_TRAMPOLINE_ROUTING_REQ_ECLAIR = 1 << 50
+    OPTION_TRAMPOLINE_ROUTING_OPT_ECLAIR = 1 << 51
 
     def validate_transitive_dependencies(self) -> bool:
         # for all even bit set, set corresponding odd bit:
@@ -1162,7 +1165,13 @@ class LNPeerAddr:
 
 
 def get_compressed_pubkey_from_bech32(bech32_pubkey: str) -> bytes:
-    hrp, data_5bits = segwit_addr.bech32_decode(bech32_pubkey)
+    decoded_bech32 = segwit_addr.bech32_decode(bech32_pubkey)
+    hrp = decoded_bech32.hrp
+    data_5bits = decoded_bech32.data
+    if decoded_bech32.encoding is None:
+        raise ValueError("Bad bech32 checksum")
+    if decoded_bech32.encoding != segwit_addr.Encoding.BECH32:
+        raise ValueError("Bad bech32 encoding: must be using vanilla BECH32")
     if hrp != 'ln':
         raise Exception('unexpected hrp: {}'.format(hrp))
     data_8bits = segwit_addr.convertbits(data_5bits, 5, 8, False)

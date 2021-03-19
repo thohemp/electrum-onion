@@ -110,7 +110,7 @@ class BaseTxDialog(QDialog, MessageBoxMixin):
         self.prompt_if_unsaved = prompt_if_unsaved
         self.saved = False
         self.desc = desc
-        self.setMinimumWidth(950)
+        self.setMinimumWidth(1200)
         self.set_title()
 
         self.psbt_only_widgets = []  # type: List[QWidget]
@@ -443,7 +443,8 @@ class BaseTxDialog(QDialog, MessageBoxMixin):
         tx_item_fiat = None
         if (self.finalized  # ensures we don't use historical rates for tx being constructed *now*
                 and txid is not None and fx.is_enabled() and amount is not None):
-            tx_item_fiat = self.wallet.get_tx_item_fiat(txid, abs(amount), fx, fee)
+            tx_item_fiat = self.wallet.get_tx_item_fiat(
+                tx_hash=txid, amount_sat=abs(amount), fx=fx, tx_fee=fee)
         lnworker_history = self.wallet.lnworker.get_onchain_history() if self.wallet.lnworker else {}
         if txid in lnworker_history:
             item = lnworker_history[txid]
