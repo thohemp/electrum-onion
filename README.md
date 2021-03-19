@@ -5,13 +5,11 @@ electrum-onion - Lightweight DeepOnion client
 
 electrum-onion is a port of Electrum, the Bitcoin wallet, to DeepOnion.
 
-::
-
-  Licence: MIT Licence
-  Original Author: Thomas Voegtlin
-  Port Maintainer: thohemp
-  Language: Python (>= 3.6)
-  Homepage: https://deeponion.org/
+    Licence: MIT Licence
+    Original Author: Thomas Voegtlin
+    Port Maintainer: thohemp
+    Language: Python (>= 3.6)
+    Homepage: https://deeponion.org/
 
 
 
@@ -20,10 +18,6 @@ electrum-onion is a port of Electrum, the Bitcoin wallet, to DeepOnion.
 
 Getting started
 ===============
-
-(*If you've come here looking to simply run Electrum,* `you may download it here`_.)
-
-.. _you may download it here: 
 
 electrum-onion itself is pure Python, and so are most of the required dependencies,
 but not everything. The following sections describe how to run from source, but here
