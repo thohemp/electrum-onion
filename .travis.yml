@@ -10,6 +10,7 @@ before_install:
   - git tag
 install:
   - sudo apt-get -y install libsecp256k1-0
+  - pip install deeponion-x13-hash
   - pip install -r contrib/requirements/requirements-travis.txt
 cache:
   - pip: true
