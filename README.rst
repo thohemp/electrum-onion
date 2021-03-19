@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.com/thohemp/electrum-onion.svg?branch=master)](https://travis-ci.com/thohemp/electrum-onion)
+
 electrum-onion - Lightweight DeepOnion client
 ==========================================
 
