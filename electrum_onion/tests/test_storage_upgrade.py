@@ -313,7 +313,7 @@ class TestStorageUpgrade(WalletTestCase):
 
 ##########
 
-    plugins: 'electrum_ltc.plugin.Plugins'
+    plugins: 'electrum_onion.plugin.Plugins'
 
     @classmethod
     def setUpClass(cls):
