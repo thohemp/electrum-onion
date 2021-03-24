@@ -28,7 +28,7 @@ is a TL;DR::
 
 Install x13 hashing module::
 
-    pip install deeponion-x13-hash==1.0.3
+    pip install deeponion-x13-hash==1.0.4
 
 or
 

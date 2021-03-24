@@ -47,7 +47,7 @@ requirements =
     libffi,
     libsecp256k1,
     cryptography,
-    deeponion-x13-hash
+    deeponion-x13-hash==1.0.4
 
 # (str) Presplash of the application
 #presplash.filename = %(source.dir)s/gui/kivy/theming/splash.png

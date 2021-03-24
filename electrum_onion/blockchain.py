@@ -80,7 +80,7 @@ def hash_header(header: dict) -> str:
 
 
 def hash_raw_header(header: str) -> str:
-    return hash_encode(x13_hash.getPoWHash(bfh(header)))
+    return hash_encode(deeponion_x13_hash.getPoWHash(bfh(header)))
 
 # key: blockhash hex at forkpoint
 # the chain at some key is the best chain that includes the given hash
