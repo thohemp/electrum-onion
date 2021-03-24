@@ -39,14 +39,9 @@ from electrum_onion.util import base_units_list
 from .util import (ColorScheme, WindowModalDialog, HelpLabel, Buttons,
                    CloseButton)
 
-<<<<<<< HEAD:electrum_onion/gui/qt/settings_dialog.py
-from electrum_onion.i18n import languages
-from electrum_onion import qrscanner
-=======
 from electrum_onion.i18n import languages
 from electrum_onion import qrscanner
 from electrum_onion.gui import messages
->>>>>>> 87bf90ade4b907aefde1bd8ca7a6397b2fd4d657:electrum_onion/gui/qt/settings_dialog.py
 
 if TYPE_CHECKING:
     from electrum_onion.simple_config import SimpleConfig
