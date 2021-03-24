@@ -10,7 +10,6 @@ before_install:
   - git tag
 install:
   - sudo apt-get -y install libsecp256k1-0
-  - pip install deeponion-x13-hash
   - pip install -r contrib/requirements/requirements-travis.txt
 cache:
   - pip: true
@@ -23,22 +22,22 @@ after_success:
     - coveralls
 jobs:
   include:
-    - name: "Regtest functional tests"
-      language: python
-      python: 3.7
-      install:
+    #- name: "Regtest functional tests"
+    #  language: python
+    #  python: 3.7
+    #  install:
         # - sudo add-apt-repository -y ppa:DeepOnion-project/DeepOnion
-        - sudo apt-get -qq update
+    #    - sudo apt-get -qq update
         # - sudo apt-get install -yq DeepOniond
-        - sudo apt-get -y install libsecp256k1-0
-        - pip install .[tests]
-        - pip install electrumx
-      before_script:
-          - electrum_onion/tests/regtest/start_bitcoind.sh
-          - electrum_onion/tests/regtest/start_electrumx.sh
-      script:
-        - python -m unittest electrum_onion/tests/regtest.py
-      after_success: True
+    #    - sudo apt-get -y install libsecp256k1-0
+    #    - pip install .[tests]
+    #    - pip install electrumx
+    #  before_script:
+    #      - electrum_onion/tests/regtest/start_bitcoind.sh
+    #      - electrum_onion/tests/regtest/start_electrumx.sh
+    #  script:
+    #    - python -m unittest electrum_onion/tests/regtest.py
+    #  after_success: True
     - name: "Flake8 linter tests"
       language: python
       install: pip install flake8
