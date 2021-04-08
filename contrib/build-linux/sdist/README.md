@@ -20,7 +20,7 @@ folder.
 2. Build image
 
     ```
-    $ sudo docker build -t electrum-sdist-builder-img contrib/build-linux/sdist
+    $ sudo docker build -t electrum-ltc-sdist-builder-img contrib/build-linux/sdist
     ```
 
 3. Build source tarballs
@@ -46,7 +46,7 @@ folder.
         -v $PWD:/opt/electrum-onion \
         --rm \
         --workdir /opt/electrum-onion/contrib/build-linux/sdist \
-        electrum-sdist-builder-img \
+        electrum-onion-sdist-builder-img \
         ./build.sh
     ```
 4. The generated distributables are in `./dist`.

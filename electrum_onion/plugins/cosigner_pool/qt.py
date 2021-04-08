@@ -34,7 +34,7 @@ import certifi
 
 from electrum_onion import util, keystore, ecc, crypto
 from electrum_onion import transaction
-from electrum_onion.transaction import Transaction, PartialTransaction, tx_from_any
+from electrum_onion.transaction import Transaction, PartialTransaction, tx_from_any, SerializationError
 from electrum_onion.bip32 import BIP32Node
 from electrum_onion.plugin import BasePlugin, hook
 from electrum_onion.i18n import _
@@ -248,5 +248,9 @@ class Plugin(BasePlugin):
             return
 
         self.listener.clear(keyhash)
-        tx = tx_from_any(message)
+        try:
+            tx = tx_from_any(message)
+        except SerializationError as e:
+            window.show_error(_("Electrum was unable to deserialize the transaction:") + "\n" + str(e))
+            return
         show_transaction(tx, parent=window, prompt_if_unsaved=True)

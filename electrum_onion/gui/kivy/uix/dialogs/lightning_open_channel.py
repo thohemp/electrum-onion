@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING
 from kivy.lang import Builder
 from kivy.factory import Factory
 
+from electrum_onion.gui import messages
 from electrum_onion.gui.kivy.i18n import _
 from electrum_onion.lnaddr import lndecode
 from electrum_onion.util import bh2u
@@ -14,6 +15,7 @@ from electrum_onion.lnutil import ln_dummy_address, extract_nodeid
 from .label_dialog import LabelDialog
 from .confirm_tx_dialog import ConfirmTxDialog
 from .qr_dialog import QRDialog
+from .question import Question
 
 if TYPE_CHECKING:
     from ...main_window import ElectrumWindow
@@ -178,6 +180,18 @@ class LightningOpenChannelDialog(Factory.Popup, Logger):
         amount = '!' if self.is_max else self.app.get_amount(self.amount)
         self.dismiss()
         lnworker = self.app.wallet.lnworker
+        node_id, rest = extract_nodeid(conn_str)
+        if lnworker.has_conflicting_backup_with(node_id):
+            msg = messages.MGS_CONFLICTING_BACKUP_INSTANCE
+            d = Question(msg, lambda x: self._open_channel(x, conn_str, amount))
+            d.open()
+        else:
+            self._open_channel(True, conn_str, amount)
+
+    def _open_channel(self, x, conn_str, amount):
+        if not x:
+            return
+        lnworker = self.app.wallet.lnworker
         coins = self.app.wallet.get_spendable_coins(None, nonlocal_only=True)
         node_id, rest = extract_nodeid(conn_str)
         make_tx = lambda rbf: lnworker.mktx_for_open_channel(
@@ -210,15 +224,11 @@ class LightningOpenChannelDialog(Factory.Popup, Logger):
             self.app.show_error(_('Problem opening channel: ') + '\n' + repr(e))
             return
         # TODO: it would be nice to show this before broadcasting
-        if lnworker.has_recoverable_channels():
+        if chan.has_onchain_backup():
             self.maybe_show_funding_tx(chan, funding_tx)
         else:
             title = _('Save backup')
-            help_text = ' '.join([
-                _('Your wallet does not have recoverable channels.'),
-                _('Please save this channel backup on another device.'),
-                _('It may be imported in another Electrum wallet with the same seed.')
-            ])
+            help_text = _(messages.MSG_CREATED_NON_RECOVERABLE_CHANNEL)
             data = lnworker.export_channel_backup(chan.channel_id)
             popup = QRDialog(
                 title, data,

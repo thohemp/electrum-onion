@@ -79,23 +79,16 @@ setup(
     package_dir={
         'electrum_onion': 'electrum_onion'
     },
-    package_data={
-        '': ['*.txt', '*.json', '*.ttf', '*.otf', '*.csv'],
-        'electrum_onion': [
-            'wordlist/*.txt',
-            'locale/*/LC_MESSAGES/electrum.mo',
-            'lnwire/*.csv',
-        ],
-        'electrum_onion.gui': [
-            'icons/*',
-        ],
-    },
+    # Note: MANIFEST.in lists what gets included in the tar.gz, and the
+    # package_data kwarg lists what gets put in site-packages when pip installing the tar.gz.
+    # By specifying include_package_data=True, MANIFEST.in becomes responsible for both.
+    include_package_data=True,
     scripts=['electrum_onion/electrum-onion'],
     data_files=data_files,
     description="Lightweight DeepOnion Wallet",
     author="Thomas Voegtlin",
     author_email="thomasv@electrum.org",
     license="MIT Licence",
-    url="https://electrum-onion.org",
+    url="https://deeponion.org",
     long_description="""Lightweight DeepOnion Wallet""",
 )

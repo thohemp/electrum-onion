@@ -86,7 +86,7 @@ class AddressSynchronizer(Logger):
         # locks: if you need to take multiple ones, acquire them in the order they are defined here!
         self.lock = threading.RLock()
         self.transaction_lock = threading.RLock()
-        self.future_tx = {}  # type: Dict[str, int]  # txid -> blocks remaining
+        self.future_tx = {}  # type: Dict[str, int]  # txid -> wanted height
         # Transactions pending verification.  txid -> tx_height. Access with self.lock.
         self.unverified_tx = defaultdict(int)
         # true when synchronized
@@ -251,7 +251,12 @@ class AddressSynchronizer(Logger):
             return conflicting_txns
 
     def add_transaction(self, tx: Transaction, *, allow_unrelated=False) -> bool:
-        """Returns whether the tx was successfully added to the wallet history."""
+        """
+        Returns whether the tx was successfully added to the wallet history.
+        Note that a transaction may need to be added several times, if our
+        list of addresses has increased. This will return True even if the
+        transaction was already in self.db.
+        """
         assert tx, tx
         # note: tx.is_complete() is not necessarily True; tx might be partial
         # but it *needs* to have a txid:
@@ -626,12 +631,11 @@ class AddressSynchronizer(Logger):
             return cached_local_height
         return self.network.get_local_height() if self.network else self.db.get('stored_height', 0)
 
-    def add_future_tx(self, tx: Transaction, num_blocks: int) -> bool:
-        assert num_blocks > 0, num_blocks
+    def add_future_tx(self, tx: Transaction, wanted_height: int) -> bool:
         with self.lock:
             tx_was_added = self.add_transaction(tx)
             if tx_was_added:
-                self.future_tx[tx.txid()] = num_blocks
+                self.future_tx[tx.txid()] = wanted_height
             return tx_was_added
 
     def get_tx_height(self, tx_hash: str) -> TxMinedInfo:
@@ -646,9 +650,11 @@ class AddressSynchronizer(Logger):
                 height = self.unverified_tx[tx_hash]
                 return TxMinedInfo(height=height, conf=0)
             elif tx_hash in self.future_tx:
-                num_blocks_remainining = self.future_tx[tx_hash]
-                assert num_blocks_remainining > 0, num_blocks_remainining
-                return TxMinedInfo(height=TX_HEIGHT_FUTURE, conf=-num_blocks_remainining)
+                num_blocks_remainining = self.future_tx[tx_hash] - self.get_local_height()
+                if num_blocks_remainining > 0:
+                    return TxMinedInfo(height=TX_HEIGHT_FUTURE, conf=-num_blocks_remainining)
+                else:
+                    return TxMinedInfo(height=TX_HEIGHT_LOCAL, conf=0)
             else:
                 # local transaction
                 return TxMinedInfo(height=TX_HEIGHT_LOCAL, conf=0)
@@ -834,27 +840,47 @@ class AddressSynchronizer(Logger):
         return result
 
     @with_local_height_cached
-    def get_utxos(self, domain=None, *, excluded_addresses=None,
-                  mature_only: bool = False, confirmed_only: bool = False,
-                  nonlocal_only: bool = False) -> Sequence[PartialTxInput]:
+    def get_utxos(
+            self,
+            domain=None,
+            *,
+            excluded_addresses=None,
+            mature_only: bool = False,
+            confirmed_funding_only: bool = False,
+            confirmed_spending_only: bool = False,
+            nonlocal_only: bool = False,
+            block_height: int = None,
+    ) -> Sequence[PartialTxInput]:
+        if block_height is not None:
+            # caller wants the UTXOs we had at a given height; check other parameters
+            assert confirmed_funding_only
+            assert confirmed_spending_only
+            assert nonlocal_only
+        else:
+            block_height = self.get_local_height()
         coins = []
         if domain is None:
             domain = self.get_addresses()
         domain = set(domain)
         if excluded_addresses:
             domain = set(domain) - set(excluded_addresses)
-        mempool_height = self.get_local_height() + 1  # height of next block
+        mempool_height = block_height + 1  # height of next block
         for addr in domain:
-            utxos = self.get_addr_utxo(addr)
-            for utxo in utxos.values():
-                if confirmed_only and utxo.block_height <= 0:
+            txos = self.get_addr_outputs(addr)
+            for txo in txos.values():
+                if txo.spent_height is not None:
+                    if not confirmed_spending_only:
+                        continue
+                    if confirmed_spending_only and 0 < txo.spent_height <= block_height:
+                        continue
+                if confirmed_funding_only and not (0 < txo.block_height <= block_height):
                     continue
-                if nonlocal_only and utxo.block_height == TX_HEIGHT_LOCAL:
+                if nonlocal_only and txo.block_height in (TX_HEIGHT_LOCAL, TX_HEIGHT_FUTURE):
                     continue
-                if (mature_only and utxo.is_coinbase_output()
-                        and utxo.block_height + COINBASE_MATURITY > mempool_height):
+                if (mature_only and txo.is_coinbase_output()
+                        and txo.block_height + COINBASE_MATURITY > mempool_height):
                     continue
-                coins.append(utxo)
+                coins.append(txo)
                 continue
         return coins
 

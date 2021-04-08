@@ -47,7 +47,7 @@ EXCLUDE_NODE_AGE = 2 * MONTH_IN_BLOCKS
 # exclude nodes which have young mean channel age
 EXCLUDE_MEAN_CHANNEL_AGE = EXCLUDE_NODE_AGE
 # exclude nodes which charge a high fee
-EXCLUCE_EFFECTIVE_FEE_RATE = 0.001500
+EXCLUDE_EFFECTIVE_FEE_RATE = 0.001500
 # exclude nodes whose last channel open was a long time ago
 EXCLUDE_BLOCKS_LAST_CHANNEL = 3 * MONTH_IN_BLOCKS
 
@@ -182,7 +182,7 @@ class LNRater(Logger):
                     p[1].fee_base_msat,
                     p[1].fee_proportional_millionths) / FEE_AMOUNT_MSAT for p in channel_policies]
                 mean_fees_rate = mean(effective_fee_rates)
-                if mean_fees_rate > EXCLUCE_EFFECTIVE_FEE_RATE:
+                if mean_fees_rate > EXCLUDE_EFFECTIVE_FEE_RATE:
                     continue
 
                 self._node_stats[n] = NodeStats(
@@ -258,8 +258,12 @@ class LNRater(Logger):
                 continue
 
             # don't want to connect to nodes we are already connected to
-            if pk not in channel_peers:
-                break
+            if pk in channel_peers:
+                continue
+            # don't want to connect to nodes we already have a channel with on another device
+            if self.lnworker.has_conflicting_backup_with(pk):
+                continue
+            break
 
         alias = node_info.alias if node_info else 'unknown node alias'
         self.logger.info(
