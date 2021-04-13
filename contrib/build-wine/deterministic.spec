@@ -33,6 +33,8 @@ binaries += [b for b in collect_dynamic_libs('PyQt5') if 'qwindowsvista' in b[0]
 binaries += [('C:/tmp/libsecp256k1-0.dll', '.')]
 binaries += [('C:/tmp/libusb-1.0.dll', '.')]
 binaries += [('C:/tmp/libzbar-0.dll', '.')]
+binaries += [('C:/tmp/libx13hash-0.dll', '.')]
+
 
 datas = [
     (home+'electrum_onion/*.json', 'electrum_onion'),

@@ -32,9 +32,10 @@ from . import constants
 from .util import bfh, bh2u
 from .simple_config import SimpleConfig
 from .logging import get_logger, Logger
-import deeponion_x13_hash
+from .x13hash import getPoWHash
 
 _logger = get_logger(__name__)
+
 
 HEADER_SIZE = 80  # bytes
 MAX_TARGET = 0x00000FFFFF000000000000000000000000000000000000000000000000000000
@@ -80,7 +81,7 @@ def hash_header(header: dict) -> str:
 
 
 def hash_raw_header(header: str) -> str:
-    return hash_encode(deeponion_x13_hash.getPoWHash(bfh(header)))
+    return hash_encode(getPoWHash(bfh(header)))
 
 # key: blockhash hex at forkpoint
 # the chain at some key is the best chain that includes the given hash

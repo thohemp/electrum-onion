@@ -201,5 +201,3 @@ zipp==3.4.1 \
 colorama==0.4.4 \
     --hash=sha256:5941b2b48a20143d2267e95b1c2a7603ce057ee39fd88e7329b0c292aa16869b \
     --hash=sha256:9f47eda37229f68eee03b24b9748937c7dc3868f906e8ba69fbcbdd3bc5dc3e2
-deeponion-x13-hash==1.0.4 \
-    --hash=sha256:c2cbde888d5bc4e0f2e4d0421844bc39c052dc0e6ecf9ec44bf2c3cf02c388a5

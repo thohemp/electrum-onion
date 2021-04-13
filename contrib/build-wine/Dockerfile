@@ -29,6 +29,7 @@ RUN apt-get update -q && \
         autopoint=0.19.8.1-10build1 \
         libtool=2.4.6-14 \
         gettext=0.19.8.1-10build1 \
+        unzip \
         && \
     rm -rf /var/lib/apt/lists/* && \
     apt-get autoremove -y && \
