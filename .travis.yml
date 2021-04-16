@@ -1,25 +1,25 @@
-dist: bionic
-language: python
-python:
-    - 3.6
-    - 3.7
-    - 3.8
-git:
-  depth: false
-before_install:
-  - git tag
-install:
-  - sudo apt-get -y install libsecp256k1-0
-  - pip install -r contrib/requirements/requirements-travis.txt
-cache:
-  - pip: true
-  - directories:
-    - /tmp/electrum-onion-build
-script:
-    - tox
-after_success:
-    - if [ "$TRAVIS_BRANCH" = "master" ]; then pip install requests && contrib/push_locale; fi
-    - coveralls
+#dist: bionic
+#language: python
+#python:
+#    - 3.6
+#    - 3.7
+#    - 3.8
+#git:
+#  depth: false
+#before_install:
+#  - git tag
+#install:
+#  - sudo apt-get -y install libsecp256k1-0
+#  - pip install -r contrib/requirements/requirements-travis.txt
+#cache:
+#  - pip: true
+#  - directories:
+#    - /tmp/electrum-onion-build
+#script:
+#    - tox
+#after_success:
+#    - if [ "$TRAVIS_BRANCH" = "master" ]; then pip install requests && contrib/push_locale; fi
+#    - coveralls
 jobs:
   include:
     #- name: "Regtest functional tests"
