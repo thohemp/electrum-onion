@@ -1,25 +1,25 @@
-dist: bionic
-language: python
-python:
-    - 3.6
-    - 3.7
-    - 3.8
-git:
-  depth: false
-before_install:
-  - git tag
-install:
-  - sudo apt-get -y install libsecp256k1-0
-  - pip install -r contrib/requirements/requirements-travis.txt
-cache:
-  - pip: true
-  - directories:
-    - /tmp/electrum-onion-build
-script:
-    - tox
-after_success:
-    - if [ "$TRAVIS_BRANCH" = "master" ]; then pip install requests && contrib/push_locale; fi
-    - coveralls
+#dist: bionic
+#language: python
+#python:
+#    - 3.6
+#    - 3.7
+#    - 3.8
+#git:
+#  depth: false
+#before_install:
+#  - git tag
+#install:
+#  - sudo apt-get -y install libsecp256k1-0
+#  - pip install -r contrib/requirements/requirements-travis.txt
+#cache:
+#  - pip: true
+#  - directories:
+#    - /tmp/electrum-onion-build
+#script:
+#    - tox
+#after_success:
+#    - if [ "$TRAVIS_BRANCH" = "master" ]; then pip install requests && contrib/push_locale; fi
+#    - coveralls
 jobs:
   include:
     #- name: "Regtest functional tests"
@@ -38,11 +38,11 @@ jobs:
     #  script:
     #    - python -m unittest electrum_onion/tests/regtest.py
     #  after_success: True
-    - name: "Flake8 linter tests"
-      language: python
-      install: pip install flake8
-      script: flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-    - stage: binary builds
+    #- name: "Flake8 linter tests"
+    #  language: python
+    #  install: pip install flake8
+    #  script: flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+    #- stage: binary builds
       if: (branch = master) OR (tag IS present)
       name: "Windows build"
       language: c
@@ -61,7 +61,7 @@ jobs:
       install:
         - sudo docker build --no-cache -t electrum-onion-wine-builder-img ./contrib/build-wine/
       script:
-        - sudo docker run --name electrum-onion-wine-builder-cont -v $PWD:/opt/wine64/drive_c/electrum-onion --rm --workdir /opt/wine64/drive_c/electrum-onion/contrib/build-wine electrum-onion-wine-builder-img ./build.sh
+         - sudo docker run --name electrum-onion-wine-builder-cont -v $PWD:/opt/wine64/drive_c/electrum-onion --rm --workdir /opt/wine64/drive_c/electrum-onion/contrib/build-wine electrum-onion-wine-builder-img ./build.sh
       after_success: true
     - if: (branch = master) OR (tag IS present)
       name: "Android build"
