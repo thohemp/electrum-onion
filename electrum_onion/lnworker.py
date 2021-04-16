@@ -830,6 +830,8 @@ class LNWallet(LNWorker):
             item = chan.get_funding_height()
             if item is None:
                 continue
+            if not self.lnwatcher:
+                continue  # lnwatcher not available with --offline (its data is not persisted)
             funding_txid, funding_height, funding_timestamp = item
             tx_height = self.lnwatcher.get_tx_height(funding_txid)
             item = {
@@ -1938,22 +1940,21 @@ class LNWallet(LNWorker):
         return Decimal(can_send_minus_fees) / 1000
 
     def num_sats_can_receive(self) -> Decimal:
-        can_receive = 0
         with self.lock:
-            if self.channels:
-                for c in self.channels.values():
-                    if c.is_active() and not c.is_frozen_for_receiving():
-                        can_receive += c.available_to_spend(REMOTE)
+            channels = [
+                c for c in self.channels.values()
+                if c.is_active() and not c.is_frozen_for_receiving()
+            ]
+            can_receive = sum([c.available_to_spend(REMOTE) for c in channels]) if channels else 0
         return Decimal(can_receive) / 1000
 
     def num_sats_can_receive_no_mpp(self) -> Decimal:
-        can_receive = 0
         with self.lock:
-            if self.channels:
-                can_receive = max([
-                    c.available_to_spend(REMOTE) for c in self.channels.values()
-                    if c.is_active() and not c.is_frozen_for_receiving()
-                ])
+            channels = [
+                c for c in self.channels.values()
+                if c.is_active() and not c.is_frozen_for_receiving()
+            ]
+            can_receive = max([c.available_to_spend(REMOTE) for c in channels]) if channels else 0
         return Decimal(can_receive) / 1000
 
     def can_pay_invoice(self, invoice: LNInvoice) -> bool:
