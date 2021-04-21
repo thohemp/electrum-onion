@@ -77,6 +77,7 @@ def check_imports():
 if not is_android:
     check_imports()
 
+sys._ELECTRUM_RUNNING_VIA_RUNELECTRUM = True  # used by logging.py
 
 from electrum_onion.logging import get_logger, configure_logging
 from electrum_onion import util
