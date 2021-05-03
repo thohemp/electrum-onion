@@ -132,16 +132,6 @@ jobs:
           - git fetch --all --tags
       script:
         - ./contrib/deterministic-build/check_submodules.sh
-      deploy:
-        provider: releases
-          api_key: HmogkRSw00uZkL7dZO+KsyFumfSJG/efKm1AJ5M1BH3thPfWPi2r6NPAxc98W69iaVblX6pQ75Vp3/uWk7KCAIrNSTnMKi6kuZmwhudhcJPIFrUoZtiaiaWS0rCqQx2e8TD/fQU1X5XVmzBg93fzV2llTHbkMl9Nf3/clgw2UFDKvNeYXPHmZTKt0i1kA8Q3I63sfocqaYf1TpC5xMN4DSd+WG2eKnDwPloTM4V7zNqMT5QXevWnJRpJRoN26KrypIR132D2z3nTHKukccEqww2dTkGxDA8arhITGnGe3Wei8pWCZ6lV0DCZTx2UK/Disi3K6J/tLjg8CpI+B/Z9oxxSPLHMjjuLDwMIWLb2cEnS0XWCaxAZrFrydDy9pfRIwClTE9BYfqSLpJ7FQUaStK4MYNsxL5WTyfQU20OQH2QzEIbziuB90JOUFcf3Fu7F1KnlgA4EV090JYlGanruqB/obVKFli39ka4bR3BAqLuFM1Xnk51SQMx8HuhuucpaFMpMUHQYBW/OaOPZiil5Luaxii21SD+CRVrML19j2XkVTQD+7XSfMzn/90K3AZWEVWE+dyxWwcrRSUXbf7O/vk/2qd12WUWnz8ayQZ8e6QbGYmkbOitNpKHgRNzUsJ9IjsP5JSVldOjPWN6+VClHjtLAma4dUzwZlB35DI/wmTw=
-        file:
-          - contrib/build-linux/sdist/fresh_clone/electrum-onion/dist/electrum-onion-4.2.0.tar.gz
-        on:
-          repo: thohemp/electrum-onion
-        skip_cleanup: true
-        on:
-          tags: true
       after_success: true
       if: tag IS present
       
