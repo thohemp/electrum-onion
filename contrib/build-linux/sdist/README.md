@@ -20,7 +20,7 @@ folder.
 2. Build image
 
     ```
-    $ sudo docker build -t electrum-ltc-sdist-builder-img contrib/build-linux/sdist
+    $ sudo docker build -t electrum-onion-sdist-builder-img contrib/build-linux/sdist
     ```
 
 3. Build source tarballs
@@ -34,7 +34,7 @@ folder.
         umask 0022 && \
         mkdir -p $FRESH_CLONE && \
         cd $FRESH_CLONE  && \
-        git clone https://github.com/pooler/electrum-onion.git && \
+        git clone https://github.com/thohemp/electrum-onion.git && \
         cd electrum-onion
     ```
 
