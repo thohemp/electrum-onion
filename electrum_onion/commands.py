@@ -1092,7 +1092,13 @@ class Commands:
 
     @command('n')
     async def clear_ln_blacklist(self):
-        self.network.path_finder.blacklist.clear()
+        if self.network.path_finder:
+            self.network.path_finder.liquidity_hints.clear_blacklist()
+
+    @command('n')
+    async def reset_liquidity_hints(self):
+        if self.network.path_finder:
+            self.network.path_finder.liquidity_hints.reset_liquidity_hints()
 
     @command('w')
     async def list_invoices(self, wallet: Abstract_Wallet = None):

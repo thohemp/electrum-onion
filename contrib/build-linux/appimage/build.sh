@@ -110,7 +110,7 @@ info "preparing electrum-locale."
         fail "Please install gettext"
     fi
     # we want the binary to have only compiled (.mo) locale files; not source (.po) files
-    rm -rf "$PROJECT_ROOT/electrum_ltc/locale/"
+    rm -rf "$PROJECT_ROOT/electrum_onion/locale/"
     for i in ./locale/*; do
         dir="$PROJECT_ROOT/electrum_onion/$i/LC_MESSAGES"
         mkdir -p $dir
