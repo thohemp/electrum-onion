@@ -26,20 +26,17 @@ Popup:
                 size_hint_x: 0.4
             TopLabel:
                 markup: True
-                text: '[color=6666ff][ref=x]https://electrum-onion.org[/ref][/color]'
+                text: '[color=6666ff][ref=x]https://deeponion.org[/ref][/color]'
                 on_ref_press:
                     import webbrowser
-                    webbrowser.open("https://electrum-onion.org")
+                    webbrowser.open("https://deeponion.org")
                 size_hint_x: 0.6
             TopLabel:
                 text: _('Developers')
                 size_hint_x: 0.4
             TopLabel:
-                text: '\n'.join(['Thomas Voegtlin', 'SomberNight'])
+                text: '\n'.join(['Thomas Voegtlin', 'SomberNight','thohemp'])
                 size_hint_x: 0.6
-        TopLabel:
-            text: _('Distributed by Electrum Technologies GmbH')
-            padding: '0dp', '20dp'
         Widget:
             size_hint: None, 0.5
         BoxLayout:
