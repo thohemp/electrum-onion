@@ -63,7 +63,7 @@ class BaseCrashReporter(Logger):
     def send_report(self, asyncio_loop, proxy, endpoint="/crash", *, timeout=None):
         if constants.net.GENESIS[-4:] not in ["29a0", "bfe2"] and ".electrum-onion.org" in BaseCrashReporter.report_server:
             # Gah! Some kind of altcoin wants to send us crash reports.
-            raise Exception(_("Missing report URL."))
+            raise Exception(_("Please open an support ticket on https://deeponion.org."))
         report = self.get_traceback_info()
         report.update(self.get_additional_info())
         report = json.dumps(report)
