@@ -811,7 +811,7 @@ def block_explorer_URL(config: 'SimpleConfig', kind: str, item: str) -> Optional
 
 
 # note: when checking against these, use .lower() to support case-insensitivity
-BITCOIN_BIP21_URI_SCHEME = 'litecoin'
+BITCOIN_BIP21_URI_SCHEME = 'deeponion'
 LIGHTNING_URI_SCHEME = 'lightning'
 
 
@@ -834,7 +834,7 @@ def parse_URI(uri: str, on_pr: Callable = None, *, loop=None) -> dict:
 
     u = urllib.parse.urlparse(uri)
     if u.scheme.lower() != BITCOIN_BIP21_URI_SCHEME:
-        raise InvalidBitcoinURI("Not a litecoin URI")
+        raise InvalidBitcoinURI("Not a DeepOnion URI")
     address = u.path
 
     # python for android fails to parse query
@@ -934,13 +934,13 @@ def create_bip21_uri(addr, amount_sat: Optional[int], message: Optional[str],
 
 def maybe_extract_bolt11_invoice(data: str) -> Optional[str]:
     data = data.strip()  # whitespaces
-    # Litecoin: legacy addresses may start with 'LN'
+    # DeepOnion: legacy addresses may start with 'D'
     if len(data) < 40:
         return None
     data = data.lower()
-    if data.startswith(LIGHTNING_URI_SCHEME + ':ln'):
+    if data.startswith(LIGHTNING_URI_SCHEME + ':d'):
         data = data[10:]
-    if data.startswith('ln'):
+    if data.startswith('D'):
         return data
     return None
 
