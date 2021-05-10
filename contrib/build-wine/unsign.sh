@@ -21,8 +21,8 @@ echo "Found $(ls dist/*.exe | wc -w) files to verify."
 for mine in $(ls dist/*.exe); do
     echo "---------------"
     f=$(basename $mine)
-    echo "Downloading https://electrum-onion.org/download/$f"
-    wget -q https://electrum-onion.org/download/$f -O signed/$f
+    echo "Downloading https://deeponion.org/download/$f"
+    wget -q https://deeponion.org/download/$f -O signed/$f
     out="signed/stripped/$f"
     # Remove PE signature from signed binary
     osslsigncode remove-signature -in signed/$f -out $out > /dev/null 2>&1

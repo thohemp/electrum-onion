@@ -1323,10 +1323,10 @@ config_variables = {
     'addrequest': {
         'ssl_privkey': 'Path to your SSL private key, needed to sign the request.',
         'ssl_chain': 'Chain of SSL certificates, needed for signed requests. Put your certificate at the top and the root CA at the end',
-        'url_rewrite': 'Parameters passed to str.replace(), in order to create the r= part of DeepOnion: URIs. Example: \"(\'file:///var/www/\',\'https://electrum-onion.org/\')\"',
+        'url_rewrite': 'Parameters passed to str.replace(), in order to create the r= part of DeepOnion: URIs. Example: \"(\'file:///var/www/\',\'https://deeponion.org/\')\"',
     },
     'listrequests':{
-        'url_rewrite': 'Parameters passed to str.replace(), in order to create the r= part of DeepOnion: URIs. Example: \"(\'file:///var/www/\',\'https://electrum-onion.org/\')\"',
+        'url_rewrite': 'Parameters passed to str.replace(), in order to create the r= part of DeepOnion: URIs. Example: \"(\'file:///var/www/\',\'https://deeponion.org/\')\"',
     }
 }
 

@@ -27,7 +27,7 @@ for f in $(ls *.exe); do
       -certs "$CERT_FILE" \
       -key "$KEY_FILE" \
       -n "electrum-onion" \
-      -i "https://electrum-onion.org/" \
+      -i "https://deeponion.org/" \
       -t "http://timestamp.digicert.com/" \
       -in "$f" \
       -out "../signed/$f"

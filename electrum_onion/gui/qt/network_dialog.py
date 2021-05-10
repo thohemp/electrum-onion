@@ -327,7 +327,7 @@ class NetworkChoiceLayout(object):
 
     def check_disable_proxy(self, b):
         if not self.config.is_modifiable('proxy'):
-            b = False
+            b = True
         for w in [self.proxy_mode, self.proxy_host, self.proxy_port, self.proxy_user, self.proxy_password]:
             w.setEnabled(b)
 

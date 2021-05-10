@@ -20,8 +20,8 @@ from electrum_onion.network import Network
 
 
 class UpdateCheck(QDialog, Logger):
-    url = "https://electrum-onion.org/version"
-    download_url = "https://electrum-onion.org/#download"
+    url = "https://deeponion.org/version"
+    download_url = "https://deeponion.org/#download"
 
     VERSION_ANNOUNCEMENT_SIGNING_KEYS = (
         "LWZzbv5SbiRRjBDL6dUYRdBX9Dp89RDZgG",
