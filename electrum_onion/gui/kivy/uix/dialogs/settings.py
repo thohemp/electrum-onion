@@ -82,18 +82,18 @@ Builder.load_string('''
                     description: _('Change your password') if app._use_single_password else _("Change your password for this wallet.")
                     action: root.change_password
                 CardSeparator
-                SettingsItem:
-                    status: _('Yes') if app.use_recoverable_channels else _('No')
-                    title: _('Create recoverable channels') + ': ' + self.status
-                    description: _("Add channel recovery data to funding transaction.")
-                    message: _(messages.MSG_RECOVERABLE_CHANNELS)
-                    action: partial(root.boolean_dialog, 'use_recoverable_channels', _('Create recoverable channels'), self.message)
-                CardSeparator
-                SettingsItem:
-                    status: _('Trampoline') if not app.use_gossip else _('Gossip')
-                    title: _('Lightning Routing') + ': ' + self.status
-                    description: _("Use trampoline routing or gossip.")
-                    action: partial(root.routing_dialog, self)
+                # SettingsItem:
+                  #  status: _('Yes') if app.use_recoverable_channels else _('No')
+                  #  title: _('Create recoverable channels') + ': ' + self.status
+                  #  description: _("Add channel recovery data to funding transaction.")
+                  #  message: _(messages.MSG_RECOVERABLE_CHANNELS)
+                  #  action: partial(root.boolean_dialog, 'use_recoverable_channels', _('Create recoverable channels'), self.message)
+                # CardSeparator
+                # SettingsItem:
+                  #  status: _('Trampoline') if not app.use_gossip else _('Gossip')
+                  #  title: _('Lightning Routing') + ': ' + self.status
+                  #  description: _("Use trampoline routing or gossip.")
+                  #  action: partial(root.routing_dialog, self)
 
                 # disabled: there is currently only one coin selection policy
                 #CardSeparator
