@@ -1626,7 +1626,7 @@ class PartialTransaction(Transaction):
                        for txin in tx.inputs()]
         res._outputs = [PartialTxOutput.from_txout(txout) for txout in tx.outputs()]
         res.version = tx.version
-        res.ntime = tx.ntime
+        res.time = tx.time
         res.locktime = tx.locktime
         return res
 
@@ -1852,7 +1852,7 @@ class PartialTransaction(Transaction):
     def serialize_preimage(self, txin_index: int, *,
                            bip143_shared_txdigest_fields: BIP143SharedTxDigestFields = None) -> str:
         nVersion = int_to_hex(self.version, 4)
-        nTime = int_to_hex(self.ntime, 4)
+        nTime = int_to_hex(self.time, 4)
         nLocktime = int_to_hex(self.locktime, 4)
         inputs = self.inputs()
         outputs = self.outputs()
