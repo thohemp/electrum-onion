@@ -24,7 +24,7 @@ from .logging import Logger
 
 
 DEFAULT_ENABLED = False
-DEFAULT_CURRENCY = "EUR"
+DEFAULT_CURRENCY = "USD"
 DEFAULT_EXCHANGE = "CoinGecko"  # default exchange should ideally provide historical rates
 
 
@@ -174,8 +174,8 @@ class BitcoinVenezuela(ExchangeBase):
 
     async def get_rates(self, ccy):
         json = await self.get_json('api.bitcoinvenezuela.com', '/')
-        rates = [(r, json['LTC'][r]) for r in json['LTC']
-                 if json['LTC'][r] is not None]  # Giving NULL sometimes
+        rates = [(r, json['ONION'][r]) for r in json['ONION']
+                 if json['ONION'][r] is not None]  # Giving NULL sometimes
         return dict(rates)
 
     def history_ccys(self):
@@ -183,7 +183,7 @@ class BitcoinVenezuela(ExchangeBase):
 
     async def request_history(self, ccy):
         json = await self.get_json('api.bitcoinvenezuela.com',
-                             "/historical/index.php?coin=LTC")
+                             "/historical/index.php?coin=ONION")
         return json[ccy +'_LTC']
 
 
@@ -242,7 +242,7 @@ class CoinCap(ExchangeBase):
 class CoinGecko(ExchangeBase):
 
     async def get_rates(self, ccy):
-        json = await self.get_json('api.coingecko.com', '/api/v3/coins/DeepOnion?localization=false&tickers=false&community_data=false&developer_data=false&sparkline=false')
+        json = await self.get_json('api.coingecko.com', '/api/v3/coins/deeponion')
         return dict([(ccy.upper(), Decimal(d))
                      for ccy, d in json['market_data']['current_price'].items()])
 
