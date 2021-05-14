@@ -195,7 +195,7 @@ class SettingsDialog(WindowModalDialog):
         # units
         units = base_units_list
         msg = (_('Base unit of your wallet.')
-               + '\n1 LTC = 1000 mLTC. 1 mLTC = 1000 uLTC. 1 uLTC = 100 sat.\n'
+               + '\n1 ONION = 1000 mONION. 1 mLTC = 1000 uONION. 1 uONION = 100 oni.\n'
                + _('This setting affects the Send tab, and all balance related fields.'))
         unit_label = HelpLabel(_('Base unit') + ':', msg)
         unit_combo = QComboBox()

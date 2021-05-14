@@ -713,15 +713,15 @@ class SwapDialog(Factory.Popup):
 
         s = 's' if eta > 1 else ''
         if eta > RECOMMEND_BLOCKS_SWAP or eta == -1:
-            msg = f'Warning: Your fee rate of {fee_per_b} sat/B may be too ' \
+            msg = f'Warning: Your fee rate of {fee_per_b} oni/B may be too ' \
                   f'low for the swap to succeed before its timeout. ' \
                   f'The recommended fee rate is at least {suggest_fee_per_b} ' \
                   f'sat/B.'
         else:
             msg = f'Info: Your swap is estimated to be processed in {eta} ' \
-                  f'block{s} with an onchain fee rate of {fee_per_b} sat/B.'
+                  f'block{s} with an onchain fee rate of {fee_per_b} oni/B.'
 
-        self.fee_rate_text = f'{fee_per_b} sat/B'
+        self.fee_rate_text = f'{fee_per_b} oni/B'
         self.ids.fee_estimate.text = msg
 
     def update_tx(self, onchain_amount: Union[int, str]):

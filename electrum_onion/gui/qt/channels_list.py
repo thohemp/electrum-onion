@@ -351,7 +351,7 @@ class ChannelsList(MyTreeView):
         self.swap_button.setDisabled(True)
         self.new_channel_button = EnterButton(_('Open Channel'), self.new_channel_with_warning)
         self.new_channel_button.setEnabled(self.parent.wallet.has_lightning())
-        h.addWidget(self.new_channel_button)
+        # h.addWidget(self.new_channel_button)
         # Litecoin: disable swap for now
         # h.addWidget(self.swap_button)
         return h

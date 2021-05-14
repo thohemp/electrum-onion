@@ -1075,7 +1075,7 @@ class Abstract_Wallet(AddressSynchronizer, ABC):
                 out = {
                     'date': date,
                     'block_height': height,
-                    'LTC_balance': Satoshis(balance),
+                    'ONION_balance': Satoshis(balance),
                 }
                 if show_fiat:
                     ap = self.acquisition_price(coins, fx.timestamp_rate, fx.ccy)
@@ -1084,14 +1084,14 @@ class Abstract_Wallet(AddressSynchronizer, ABC):
                     out['liquidation_price'] = Fiat(lp, fx.ccy)
                     out['unrealized_gains'] = Fiat(lp - ap, fx.ccy)
                     out['fiat_balance'] = Fiat(fx.historical_value(balance, date), fx.ccy)
-                    out['LTC_fiat_price'] = Fiat(fx.historical_value(COIN, date), fx.ccy)
+                    out['ONION_fiat_price'] = Fiat(fx.historical_value(COIN, date), fx.ccy)
                 return out
 
             summary_start = summary_point(start_timestamp, start_height, start_balance, start_coins)
             summary_end = summary_point(end_timestamp, end_height, end_balance, end_coins)
             flow = {
-                'LTC_incoming': Satoshis(income),
-                'LTC_outgoing': Satoshis(expenditures)
+                'ONION_incoming': Satoshis(income),
+                'ONION_outgoing': Satoshis(expenditures)
             }
             if show_fiat:
                 flow['fiat_currency'] = fx.ccy
@@ -1190,7 +1190,7 @@ class Abstract_Wallet(AddressSynchronizer, ABC):
             if fee is not None:
                 size = tx.estimated_size()
                 fee_per_byte = fee / size
-                extra.append(format_fee_satoshis(fee_per_byte) + ' sat/b')
+                extra.append(format_fee_satoshis(fee_per_byte) + ' oni/b')
             if fee is not None and height in (TX_HEIGHT_UNCONF_PARENT, TX_HEIGHT_UNCONFIRMED) \
                and self.config.has_fee_mempool():
                 exp_n = self.config.fee_to_depth(fee_per_byte)
@@ -1542,7 +1542,7 @@ class Abstract_Wallet(AddressSynchronizer, ABC):
             strategies: Sequence[BumpFeeStrategy] = None,
     ) -> PartialTransaction:
         """Increase the miner fee of 'tx'.
-        'new_fee_rate' is the target min rate in sat/vbyte
+        'new_fee_rate' is the target min rate in oni/vbyte
         'coins' is a list of UTXOs we can choose from as potential new inputs to be added
         """
         txid = txid or tx.txid()
@@ -2584,7 +2584,7 @@ class Abstract_Wallet(AddressSynchronizer, ABC):
         elif feerate > FEERATE_WARNING_HIGH_FEE / 1000:
             long_warning = (
                     _('Warning') + ': ' + _("The fee for this transaction seems unusually high.")
-                    + f' (feerate: {feerate:.2f} sat/byte)')
+                    + f' (feerate: {feerate:.2f} oni/byte)')
             short_warning = _("high fee rate") + "!"
         if long_warning is None:
             return None

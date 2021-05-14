@@ -465,7 +465,7 @@ class SimpleConfig(Logger):
             fee_per_byte = None
         else:
             fee_per_byte = fee_per_kb/1000
-            rate_str = format_fee_satoshis(fee_per_byte) + ' sat/byte'
+            rate_str = format_fee_satoshis(fee_per_byte) + ' oni/byte'
 
         if dyn:
             if mempool:
@@ -668,7 +668,7 @@ class SimpleConfig(Logger):
         return self.format_amount(amount) + ' '+ self.get_base_unit()
 
     def format_fee_rate(self, fee_rate):
-        return format_fee_satoshis(fee_rate/1000, num_zeros=self.num_zeros) + ' sat/byte'
+        return format_fee_satoshis(fee_rate/1000, num_zeros=self.num_zeros) + ' oni/byte'
 
     def get_base_unit(self):
         return decimal_point_to_base_unit_name(self.decimal_point)
