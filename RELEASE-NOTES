@@ -1,3 +1,9 @@
+
+# Release 4.2.2
+
+This version is the first DeepOnion port release. 
+
+
 # Release 4.1.2 - (April 8, 2021)
  * Qt GUI:
     - fix some crashes when exiting (#6889)
