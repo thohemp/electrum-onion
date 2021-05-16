@@ -287,7 +287,7 @@ Builder.load_string(r'''
                     value: 'Local: %d\nRemote: %d' % (root.local_ctn, root.remote_ctn)
                 BoxLabel:
                     text: _('Fee rate')
-                    value: '{} sat/byte'.format(root.feerate)
+                    value: '{} oni/byte'.format(root.feerate)
                 BoxLabel:
                     text: _('Frozen (for sending)')
                     value: str(root.is_frozen_for_sending)
@@ -716,7 +716,7 @@ class SwapDialog(Factory.Popup):
             msg = f'Warning: Your fee rate of {fee_per_b} oni/B may be too ' \
                   f'low for the swap to succeed before its timeout. ' \
                   f'The recommended fee rate is at least {suggest_fee_per_b} ' \
-                  f'sat/B.'
+                  f'oni/B.'
         else:
             msg = f'Info: Your swap is estimated to be processed in {eta} ' \
                   f'block{s} with an onchain fee rate of {fee_per_b} oni/B.'
