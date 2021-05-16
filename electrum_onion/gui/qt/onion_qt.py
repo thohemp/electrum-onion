@@ -10,7 +10,6 @@ from PyQt5.QtWidgets import (QTabBar, QTextEdit, QStylePainter,
                              QCheckBox)
 
 from electrum_onion import constants
-#from electrum_onion.dash_tx import SPEC_TX_NAMES
 from electrum_onion.i18n import _
 from electrum_onion.network import deserialize_proxy
 from electrum_onion.version import ELECTRUM_VERSION

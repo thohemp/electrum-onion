@@ -49,7 +49,6 @@ QGroupBox::title {
 }
 
 #main_window_nav_bar > QStackedWidget {
-    border-top: 2px solid #FF0000;
     background:qradialgradient(cx:0.5, cy:0.5, radius: 0.5, fx:0.5, fy:0.5, stop:0 rgba(255, 255, 255, 255), stop: 1 rgba(246, 246, 246, 255));
 }
 
@@ -59,7 +58,7 @@ QGroupBox::title {
 }
 
 #main_window_nav_bar > QTabBar {
-    background: url({pkg_dir}/gui/icons/navlogo.png) no-repeat left top;
+    background: url({pkg_dir}/gui/icons/onion.svg) no-repeat left top;
 }
 
 QTabWidget#main_window_nav_bar::tab-bar {
@@ -71,8 +70,9 @@ QTabWidget#main_window_nav_bar::pane {
 }
 
 #main_window_nav_bar > QTabBar::tab {
-    background-color:#1e75b4;
+    background-color:#7d50cf;
     color:#fff;
+    font-weight:bold;
     min-height: 44px;
     padding-left:1em;
     padding-right:1em;
@@ -88,7 +88,8 @@ QTabWidget#main_window_nav_bar::pane {
 }
 
 #main_window_nav_bar > QTabBar::tab:selected, #main_window_nav_bar > QTabBar::tab:hover {
-    background-color:#0d436e;
+    background-color:#9c6cef;
+    font-weight:bold;
     color:#fff;
 }
 
@@ -107,6 +108,7 @@ QCheckBox:hover {
 
 QCheckBox {
     spacing: 5px;
+    color: #333;
 }
 
 QCheckBox::indicator {
@@ -114,41 +116,6 @@ QCheckBox::indicator {
     height: 16px;
 }
 
-QCheckBox::indicator:unchecked {
-    image:url({pkg_dir}/gui/icons/checkbox/unchecked.png);
-}
-
-QCheckBox::indicator:unchecked:disabled {
-    image:url({pkg_dir}/gui/icons/checkbox/unchecked_disabled.png);
-}
-
-QCheckBox::indicator:unchecked:pressed {
-    image:url({pkg_dir}/gui/icons/checkbox/checked.png);
-}
-
-QCheckBox::indicator:checked {
-    image:url({pkg_dir}/gui/icons/checkbox/checked.png);
-}
-
-QCheckBox::indicator:checked:disabled {
-    image:url({pkg_dir}/gui/icons/checkbox/checked_disabled.png);
-}
-
-QCheckBox::indicator:checked:pressed {
-    image:url({pkg_dir}/gui/icons/checkbox/unchecked.png);
-}
-
-QCheckBox::indicator:indeterminate {
-    image:url({pkg_dir}/gui/icons/checkbox/indeterminate.png);
-}
-
-QCheckBox::indicator:indeterminate:disabled {
-    image:url({pkg_dir}/gui/icons/checkbox/indeterminate_disabled.png);
-}
-
-QCheckBox::indicator:indeterminate:pressed {
-    image:url({pkg_dir}/gui/icons/checkbox/checked.png);
-}
 
 QRadioButton {
     padding: 2px;
@@ -161,38 +128,15 @@ QRadioButton::indicator {
     height: 16px;
 }
 
-QRadioButton::indicator::unchecked {
-    image:url({pkg_dir}/gui/icons/radio/unchecked.png);
-}
-
-QRadioButton::indicator:unchecked:disabled {
-    image:url({pkg_dir}/gui/icons/radio/unchecked_disabled.png);
-}
-
-QRadioButton::indicator:unchecked:pressed {
-    image:url({pkg_dir}/gui/icons/radio/checked.png);
-}
-
-QRadioButton::indicator::checked {
-    image:url({pkg_dir}/gui/icons/radio/checked.png);
-}
-
-QRadioButton::indicator:checked:disabled {
-    image:url({pkg_dir}/gui/icons/radio/checked_disabled.png);
-}
-
-QRadioButton::indicator:checked:pressed {
-    image:url({pkg_dir}/gui/icons/radio/checked.png);
-}
 
 ScanQRTextEdit, ShowQRTextEdit, ButtonsTextEdit {
     color:#333;
     background-color:#FFFFFF;
-    border: 1px solid #1c75bc;
+    border: 1px solid #7d50cf;
 }
 
 QValidatedLineEdit, QLineEdit, PayToEdit { /* Text Entry Fields */
-    border: 1px solid #1c75bc;
+    border: 1px solid #7d50cf;
     outline:0;
     padding: 5px 3px;
     background-color:#fcfcfc;
@@ -200,12 +144,12 @@ QValidatedLineEdit, QLineEdit, PayToEdit { /* Text Entry Fields */
 }
 
 QValidatedLineEdit:disabled, QLineEdit:disabled, PayToEdit:disabled {
-    border: 1px solid #676767;
+    border: 1px solid #7d50cf;
     background-color: #eeeeee;
 }
 
 QValidatedLineEdit:read-only, QLineEdit:read-only, PayToEdit:read-only {
-    border: 1px solid #676767;
+    border: 1px solid #7d50cf;
 }
 
 PayToEdit {
@@ -228,7 +172,7 @@ QLabel {
 
 /* Wallet Container */
 #main_window_container {
-    background: #1e75b4;
+    background: #7d50cf;
     color: #fff;
 }
 
@@ -364,7 +308,7 @@ QLabel { /* Base Text Size & Color */
 /* 5. Buttons, Spinners, Dropdown */
 
 QPushButton, #blue_toolbutton { /* Global Button Style */
-    background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: .01 #4ca5dc, stop: .1 #2c85cc, stop: .95 #2c85cc, stop: 1 #1D80B5);
+    background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: .01 #7d50cf, stop: .1 #7d50cf, stop: .95 #7d50cf, stop: 1 #7d50cf);
     border:0;
     border-radius:3px;
     color:#ffffff;
@@ -378,7 +322,8 @@ QPushButton, #blue_toolbutton { /* Global Button Style */
 }
 
 QPushButton:hover, #blue_toolbutton:hover, StatusBarButton:hover {
-    background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: .01 #4ca5dc, stop: .1 #4ca5dc, stop: .95 #4ca5dc, stop: 1 #1D80B5);
+    background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: .01 #9c6cef, stop: .1 #9c6cef, stop: .95 #9c6cef, stop: 1 #9c6cef);
+    color:#fff;
 }
 
 StatusBarButton:hover {

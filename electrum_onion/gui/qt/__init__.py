@@ -150,6 +150,9 @@ class ElectrumGui(Logger):
             except BaseException as e:
                 use_dark_theme = False
                 self.logger.warning(f'Error setting dark theme: {repr(e)}')
+        else:
+            from .onion_style import onion_stylesheet
+            self.app.setStyleSheet(onion_stylesheet)
         # Apply any necessary stylesheet patches
         patch_qt_stylesheet(use_dark_theme=use_dark_theme)
         # Even if we ourselves don't set the dark theme,
