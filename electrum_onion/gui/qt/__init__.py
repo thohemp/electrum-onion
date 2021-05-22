@@ -144,15 +144,11 @@ class ElectrumGui(Logger):
     def set_dark_theme_if_needed(self):
         use_dark_theme = self.config.get('qt_gui_color_theme', 'default') == 'dark'
         if use_dark_theme:
-            try:
-                import qdarkstyle
-                self.app.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
-            except BaseException as e:
-                use_dark_theme = False
-                self.logger.warning(f'Error setting dark theme: {repr(e)}')
+            from .deeponion_dark_style import deeponion_stylesheet
+            self.app.setStyleSheet(deeponion_stylesheet)
         else:
-            from .onion_style import onion_stylesheet
-            self.app.setStyleSheet(onion_stylesheet)
+            from .deeponion_style import deeponion_stylesheet
+            self.app.setStyleSheet(deeponion_stylesheet)
         # Apply any necessary stylesheet patches
         patch_qt_stylesheet(use_dark_theme=use_dark_theme)
         # Even if we ourselves don't set the dark theme,

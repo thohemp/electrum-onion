@@ -4,7 +4,7 @@ import os
 from electrum_onion.util import pkg_dir
 
 
-onion_stylesheet = """
+deeponion_stylesheet = """
 
 /**********************/
 /* onion Evolution CSS */
@@ -58,7 +58,9 @@ QGroupBox::title {
 }
 
 #main_window_nav_bar > QTabBar {
-    background: url({pkg_dir}/gui/icons/onion.svg) no-repeat left top;
+    padding: 0px 0px 0px 17px; /* top - right - bottom - left */
+    background: url({pkg_dir}/gui/icons/gold-logo.png) no-repeat center left;
+    background-origin: content; /* the left margin of background image will 'obey' the padding-left defined up above (10px) */
 }
 
 QTabWidget#main_window_nav_bar::tab-bar {
@@ -70,7 +72,7 @@ QTabWidget#main_window_nav_bar::pane {
 }
 
 #main_window_nav_bar > QTabBar::tab {
-    background-color:#7d50cf;
+    background-color:#222435;
     color:#fff;
     font-weight:bold;
     min-height: 44px;
@@ -88,7 +90,7 @@ QTabWidget#main_window_nav_bar::pane {
 }
 
 #main_window_nav_bar > QTabBar::tab:selected, #main_window_nav_bar > QTabBar::tab:hover {
-    background-color:#9c6cef;
+    background-color:#4D67BC;
     font-weight:bold;
     color:#fff;
 }
@@ -108,12 +110,47 @@ QCheckBox:hover {
 
 QCheckBox {
     spacing: 5px;
-    color: #333;
 }
 
 QCheckBox::indicator {
     width: 16px;
     height: 16px;
+}
+
+QCheckBox::indicator:unchecked {
+    image:url({pkg_dir}/gui/icons/checkbox/unchecked.png);
+}
+
+QCheckBox::indicator:unchecked:disabled {
+    image:url({pkg_dir}/gui/icons/checkbox/unchecked_disabled.png);
+}
+
+QCheckBox::indicator:unchecked:pressed {
+    image:url({pkg_dir}/gui/icons/checkbox/checked.png);
+}
+
+QCheckBox::indicator:checked {
+    image:url({pkg_dir}/gui/icons/checkbox/checked.png);
+}
+
+QCheckBox::indicator:checked:disabled {
+    image:url({pkg_dir}/gui/icons/checkbox/checked_disabled.png);
+}
+
+QCheckBox::indicator:checked:pressed {
+    image:url({pkg_dir}/gui/icons/checkbox/unchecked.png);
+}
+
+QCheckBox::indicator:indeterminate {
+    image:url({pkg_dir}/gui/icons/checkbox/indeterminate.png);
+}
+
+QCheckBox::indicator:indeterminate:disabled {
+    image:url({pkg_dir}/gui/icons/checkbox/indeterminate_disabled.png);
+}
+
+QCheckBox::indicator:indeterminate:pressed {
+    image:url({pkg_dir}/gui/icons/checkbox/checked.png);
 }
 
 
@@ -128,15 +165,38 @@ QRadioButton::indicator {
     height: 16px;
 }
 
+QRadioButton::indicator::unchecked {
+    image:url({pkg_dir}/gui/icons/radio/unchecked.png);
+}
+
+QRadioButton::indicator:unchecked:disabled {
+    image:url({pkg_dir}/gui/icons/radio/unchecked_disabled-dark.png);
+}
+
+QRadioButton::indicator:unchecked:pressed {
+    image:url({pkg_dir}/gui/icons/radio/checked.png);
+}
+
+QRadioButton::indicator::checked {
+    image:url({pkg_dir}/gui/icons/radio/checked.png);
+}
+
+QRadioButton::indicator:checked:disabled {
+    image:url({pkg_dir}/gui/icons/radio/checked_disabled.png);
+}
+
+QRadioButton::indicator:checked:pressed {
+    image:url({pkg_dir}/gui/icons/radio/checked.png);
+}
 
 ScanQRTextEdit, ShowQRTextEdit, ButtonsTextEdit {
     color:#333;
     background-color:#FFFFFF;
-    border: 1px solid #7d50cf;
+    border: 1px solid #222435;
 }
 
 QValidatedLineEdit, QLineEdit, PayToEdit { /* Text Entry Fields */
-    border: 1px solid #7d50cf;
+    border: 1px solid #222435;
     outline:0;
     padding: 5px 3px;
     background-color:#fcfcfc;
@@ -144,12 +204,12 @@ QValidatedLineEdit, QLineEdit, PayToEdit { /* Text Entry Fields */
 }
 
 QValidatedLineEdit:disabled, QLineEdit:disabled, PayToEdit:disabled {
-    border: 1px solid #7d50cf;
+    border: 1px solid #222435;
     background-color: #eeeeee;
 }
 
 QValidatedLineEdit:read-only, QLineEdit:read-only, PayToEdit:read-only {
-    border: 1px solid #7d50cf;
+    border: 1px solid #222435;
 }
 
 PayToEdit {
@@ -172,7 +232,7 @@ QLabel {
 
 /* Wallet Container */
 #main_window_container {
-    background: #7d50cf;
+    background: #222435;
     color: #fff;
 }
 
@@ -268,7 +328,7 @@ QMenu::item {
 }
 
 QMenu::item:selected {
-    background-color:#f2f0f0;
+    background-color:#ffffff;
     color:#333;
 }
 
@@ -308,7 +368,7 @@ QLabel { /* Base Text Size & Color */
 /* 5. Buttons, Spinners, Dropdown */
 
 QPushButton, #blue_toolbutton { /* Global Button Style */
-    background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: .01 #7d50cf, stop: .1 #7d50cf, stop: .95 #7d50cf, stop: 1 #7d50cf);
+    background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: .01 #222435, stop: .1 #222435, stop: .95 #222435, stop: 1 #222435);
     border:0;
     border-radius:3px;
     color:#ffffff;
@@ -322,7 +382,7 @@ QPushButton, #blue_toolbutton { /* Global Button Style */
 }
 
 QPushButton:hover, #blue_toolbutton:hover, StatusBarButton:hover {
-    background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: .01 #9c6cef, stop: .1 #9c6cef, stop: .95 #9c6cef, stop: 1 #9c6cef);
+    background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: .01 #4D67BC, stop: .1 #4D67BC, stop: .95 #4D67BC, stop: 1 #4D67BC);
     color:#fff;
 }
 
@@ -337,13 +397,13 @@ QPushButton:focus, #blue_toolbutton:focus {
 }
 
 QPushButton:pressed, #blue_toolbutton:pressed {
-    border:1px solid #f8f8f8;
+    border:1px solid #4D67BC;
 }
 
 QPushButton:disabled, #blue_toolbutton:disabled
 {
     color: #D3E8FE;
-    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #A5CFFA, stop: 1 #72B2F8);
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #4D67BC, stop: 1 #4D67BC);
 }
 
 QStatusBar {
@@ -512,7 +572,7 @@ QHeaderView { /* Table Header */
 
 QHeaderView::section { /* Table Header Sections */
     qproperty-alignment:center;
-    background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 0.25, stop: 0 #64A3D0, stop: 1 #68A8D6);
+    background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 0.25, stop: 0 #64A3D0, stop: 1 #4D67BC);
     color:#fff;
     font-weight:bold;
     font-size:11px;
@@ -580,7 +640,7 @@ QScrollBar::add-page, QScrollBar::sub-page { /* Scroll Bar Background */
 
 QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical, QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal { /* Define Arrow Button Dimensions */
     background-color:#F8F6F6;
-    border: 1px solid #f2f0f0;
+    border: 1px solid #ffffff;
     width:16px;
     height:16px;
 }
@@ -710,7 +770,7 @@ QDialog QTabWidget::pane {
 }
 
 QDialog QTabWidget QTabBar::tab {
-    background-color:#f2f0f0;
+    background-color:#ffffff;
     color:#333;
     padding-left:10px;
     padding-right:10px;
@@ -764,7 +824,7 @@ Dip3TabWidget::pane {
 }
 
 QTabWidget VTabBar::tab {
-    background-color:#f2f0f0;
+    background-color:#ffffff;
     color:#333;
     padding-left:10px;
     padding-right:10px;
@@ -787,7 +847,7 @@ QTabWidget VTabBar::tab:selected, QTabWidget VTabBar::tab:hover {
 }
 
 QWizard {
-    background-color:#f2f0f0;
+    background-color:#ffffff;
 }
 
 #err-label {
@@ -800,4 +860,4 @@ QWizard {
 
 
 pkg_dir_for_css = pkg_dir.replace(os.sep, '/')
-onion_stylesheet = onion_stylesheet.replace('{pkg_dir}', '%s' % pkg_dir_for_css)
+deeponion_stylesheet = deeponion_stylesheet.replace('{pkg_dir}', '%s' % pkg_dir_for_css)

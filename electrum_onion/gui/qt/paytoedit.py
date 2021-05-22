@@ -70,7 +70,12 @@ class PayToEdit(CompletionTextEdit, ScanQRTextEdit, Logger):
         self.setFont(QFont(MONOSPACE_FONT))
         self.document().contentsChanged.connect(self.update_size)
         self.heightMin = 0
-        self.heightMax = 150
+        self.heightMax = 250
+
+        use_dark_theme = self.config.get('qt_gui_color_theme', 'default') == 'dark'
+        if not use_dark_theme:
+            self.document().setDocumentMargin(0)
+
         self.c = None
         self.textChanged.connect(self.check_text)
         self.outputs = []  # type: List[PartialTxOutput]
